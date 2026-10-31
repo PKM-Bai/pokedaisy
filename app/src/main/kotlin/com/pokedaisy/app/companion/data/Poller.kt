@@ -325,6 +325,9 @@ class TelemetrySampler {
             gen2Cfg?.let { activeGen2 = it }
             // A DS cart: its own text's language (NdsArt.names: a French Sacred Gold is an IPKE HeartGold, GitHub #230).
             romLanguage = nativeCfg?.language ?: gen1Cfg?.language ?: NdsArt.names?.takeIf { kind?.isDsGame == true }?.language ?: 'E'
+            // A Chinese fan translation's charmap (by the masked hash): drives Gen3Text's greedy
+            // 2-byte decoding and, through Gen3Text.encode returning null, skips the name checks.
+            Gen3Text.cjk = CjkTables.forSha(romSha1)
             romGameCode = nativeCfg?.gameCode ?: gen1Cfg?.gameCode.orEmpty()
             // Quetzal picks each kind of name's language from its own options (a few bytes a sample).
             quetzalNames = nativeCfg?.takeIf { it.quetzalPlacesDefault >= 0 }
@@ -464,6 +467,7 @@ class TelemetrySampler {
             // ROM past that (i.e. exactly the large hacks this check exists
             // for) and the hash would always come back null.
             val hash = runCatching { romHash(reader, size) }.getOrNull()
+            romSha1 = hash
             // FireRed 1.0 hacks edited in place past 16 MB (Ghost Grey): run as FireRed with their own names.
             fireRedHackConfig(hash)?.let {
                 kind = GameKind.FIRERED
@@ -512,6 +516,7 @@ class TelemetrySampler {
         // Emerald's addresses would show silently wrong data for a real hack.
         if (code == "BPEE" && size > 0x1000000L) {
             val hash = runCatching { romHash(reader, size) }.getOrNull()
+            romSha1 = hash
             when (hash) {
                 HEART_AND_SOUL_V2_0_6_SHA1 -> { kind = GameKind.HEART_AND_SOUL; nativeCfg = NATIVE_HEART_AND_SOUL }
                 LAZARUS_V2_0_SHA1 -> { kind = GameKind.LAZARUS; nativeCfg = NATIVE_LAZARUS }

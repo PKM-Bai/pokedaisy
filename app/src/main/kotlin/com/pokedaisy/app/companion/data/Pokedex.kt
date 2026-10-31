@@ -1776,6 +1776,26 @@ object Gen3Text {
         t[0xAB] = '！'; t[0xAC] = '？'; t[0xAD] = '。'; t[0xAE] = 'ー'; t[0xB0] = '⋯'
     }
 
+    /** A Chinese fan-translation's charmap in force (sorted [CjkTables] pairs, code << 16 | unicode),
+     * set from the detected ROM's masked sha1; null for every Latin / Japanese game. Codes >= 0x100 are
+     * 2-byte big-endian in the ROM; the charmap's own 1-byte codes and then the western [table] fill in. */
+    @Volatile var cjk: IntArray? = null
+
+    /** The [cjk] char for [code], or null (binary search - the pairs are sorted by code). */
+    private fun cjkChar(pairs: IntArray, code: Int): Char? {
+        var lo = 0; var hi = pairs.size - 1
+        while (lo <= hi) {
+            val mid = (lo + hi) ushr 1
+            val c = pairs[mid] ushr 16
+            when {
+                c < code -> lo = mid + 1
+                c > code -> hi = mid - 1
+                else -> return (pairs[mid] and 0xFFFF).toChar()
+            }
+        }
+        return null
+    }
+
     // Argument bytes after an 0xFC control code (text colour, font, pause, ...),
     // by code - charmap.txt's EXT_CTRL_CODE_* list.
     private val FC_ARGS = intArrayOf(0, 1, 1, 1, 3, 1, 1, 0, 1, 0, 0, 2, 1, 1, 1, 0, 2, 1, 1, 1, 1, 0, 0, 0, 0)
@@ -1807,8 +1827,11 @@ object Gen3Text {
     private val japaneseRev by lazy { reverse(japanese) }
 
     /** [s] in the running game's bytes ([romLanguage]'s table), no terminator; null when a
-     * character has no byte of its own (the multi-letter glyphs aren't used). */
+     * character has no byte of its own (the multi-letter glyphs aren't used). Null too with
+     * [cjk] in force - a Chinese ROM's names can't be encoded in the Latin tables, and that
+     * is exactly how RomNames / BestEffort skip the name check for these translations. */
     fun encode(s: String): ByteArray? {
+        if (cjk != null) return null
         val rev = if (romLanguage == 'J') japaneseRev else westernRev
         return ByteArray(s.length) { i -> (rev[s[i]] ?: return null).toByte() }
     }
@@ -1824,9 +1847,43 @@ object Gen3Text {
 
     /** Up to [max] bytes from [off], stopping at 0xFF; line breaks become
      * spaces, control codes (0xFC + args, e.g. a font change) and placeholders
-     * (0xFD + id, e.g. the player's name) are dropped. */
+     * (0xFD + id, e.g. the player's name) are dropped. With [cjk] in force
+     * (a Chinese fan translation), a 2-byte big-endian charmap code wins over
+     * the 1-byte tables - greedy, like pret's assembler is decoded. */
     fun decode(b: ByteArray, off: Int = 0, max: Int = b.size - off): String = buildString {
         val end = minOf(b.size, off + max)
+        val cj = cjk
+        if (cj != null) {
+            var i = off
+            while (i < end) {
+                val c = b[i].toInt() and 0xFF
+                if (c == 0xFF) break
+                if (c == 0xFC && i + 1 < end) {
+                    i += 2 + FC_ARGS.getOrElse(b[i + 1].toInt() and 0xFF) { 0 }
+                    continue
+                }
+                if (c == 0xFD) {
+                    i += 2
+                    continue
+                }
+                if (c == 0xFE || c == 0xFA || c == 0xFB) {
+                    append(' ')
+                    i++
+                    continue
+                }
+                if (i + 1 < end) {
+                    val ch = cjkChar(cj, (c shl 8) or (b[i + 1].toInt() and 0xFF))
+                    if (ch != null) {
+                        append(ch)
+                        i += 2
+                        continue
+                    }
+                }
+                append(cjkChar(cj, c) ?: table[c])
+                i++
+            }
+            return@buildString
+        }
         val jp = romLanguage == 'J'
         val chars = if (jp) japanese else table
         val block = pokeblock[romLanguage] ?: pokeblock.getValue('E')
