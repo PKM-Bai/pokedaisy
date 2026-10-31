@@ -4,7 +4,7 @@ package com.pokedaisy.app.companion.data
 // TOML there and run `make gamedata` (gamedata/README.md). Each one is built on first use, so
 // they can name each other and vals in any other file, whichever file is initialised first.
 
-// ---- gamedata/gen3/records/emerald.toml ----
+// ---- gamedata\gen3\records\emerald.toml ----
 
 // Emerald's own item.c: gBagPockets[ITEMS_POCKET=0/BALLS_POCKET=1/
 // TMHM_POCKET=2/BERRIES_POCKET=3/KEYITEMS_POCKET=4] - a different order.
@@ -172,7 +172,7 @@ val PC_EMERALD: PcFns by lazy {
     )
 }
 
-// ---- gamedata/gen3/records/firered.toml ----
+// ---- gamedata\gen3\records\firered.toml ----
 
 // FireRed's own gBagPockets[] index order (item.c: gBagPockets[POCKET_X-1] =
 // ...). Every FireRed-engine config (rev0/rev1/Unbound/Gaia/Radical Red)

@@ -75,10 +75,15 @@ cat "$BOOT_SCRIPT" >"$work/cmds.txt"
 echo "dump /work/out" >>"$work/cmds.txt"
 
 docker image inspect "$IMAGE" >/dev/null 2>&1 || docker build -q -t "$IMAGE" "$CAPTURE_DIR"
-docker run --rm -v "$CAPTURE_DIR:/build" -v "$work:/work" -w /build "$IMAGE" \
-    -c "gcc -O2 -Wall -o /work/mgba_dump mgba_dump.c -I/usr/include -L/usr/lib/aarch64-linux-gnu -lmgba -lm"
+# Windows 宿主机（Git Bash + Docker Desktop）：挂载源转成 Windows 路径，-w 交给 MSYS_NO_PATHCONV。
+# 仓库根一并挂载到 /repo：mgba_dump.c 的 __has_include 会发现 app/src/main/cpp/pk_*.c
+# 并编进去（否则 pk_gb_call_at / pk_follower_* / pk_look_refresh / pk_tint_set 链接失败）。
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+winpath() { cygpath -w "$1" 2>/dev/null || echo "$1"; }
+docker run --rm -v "$(winpath "$CAPTURE_DIR"):/build" -v "$(winpath "$REPO_ROOT"):/repo:ro" -v "$(winpath "$work"):/work" -w /build "$IMAGE" \
+    -c "gcc -O2 -Wall -o /work/mgba_dump /repo/native-capture/mgba_dump.c -I/usr/include -L/usr/lib/aarch64-linux-gnu -lmgba -lm"
 
-docker run --rm -v "$work:/work" -w /work "$IMAGE" \
+docker run --rm -v "$(winpath "$work"):/work" -w /work "$IMAGE" \
     -c "./mgba_dump rom.gba ${save_arg[*]} < cmds.txt" 2>&1 | tail -5
 
 if [[ ! -f "$work/out/ewram.bin" ]]; then

@@ -474,8 +474,11 @@ class TelemetrySampler {
             when (hash) {
                 UNBOUND_V2_1_1_1_SHA1 -> kind = GameKind.UNBOUND
                 UNBOUND_V2_1_1_1_FR_SHA1 -> { kind = GameKind.UNBOUND; nativeCfg = NATIVE_UNBOUND_FR }
+                UNBOUND_V2_1_1_1_CN_SHA1 -> { kind = GameKind.UNBOUND; nativeCfg = NATIVE_UNBOUND_CN }
                 GAIA_V3_2_SHA1 -> { kind = GameKind.GAIA; nativeCfg = NATIVE_GAIA_V3_2 }
                 RADICAL_RED_V4_1_SHA1 -> { kind = GameKind.RADICAL_RED; nativeCfg = NATIVE_RADICAL_RED_V4_1 }
+                RADICAL_RED_V4_1_CN_SHA1 -> { kind = GameKind.RADICAL_RED; nativeCfg = NATIVE_RADICAL_RED_V4_1_CN }
+                MERCURY_V1_33_CN_SHA1 -> { kind = GameKind.FIRERED; nativeCfg = NATIVE_MERCURY_CN }
                 ODYSSEY_V4_1_1_SHA1 -> { kind = GameKind.ODYSSEY; nativeCfg = NATIVE_ODYSSEY }
                 AMETHYST_V1_3_0_SHA1 -> { kind = GameKind.AMETHYST; nativeCfg = NATIVE_AMETHYST }
                 AMETHYST_V1_4_1_SHA1 -> { kind = GameKind.AMETHYST; nativeCfg = NATIVE_AMETHYST_V1_4_1 }
@@ -522,6 +525,7 @@ class TelemetrySampler {
                 GLAZED_V9_2_0_SHA1 -> { kind = GameKind.GLAZED; nativeCfg = NATIVE_GLAZED }
                 IMPERIUM_V1_3_1_SHA1 -> { kind = GameKind.IMPERIUM; nativeCfg = NATIVE_IMPERIUM }
                 QUETZAL_V9_0_ALPHA_SHA1 -> { kind = GameKind.QUETZAL; nativeCfg = NATIVE_QUETZAL }
+                QUETZAL_V9_0_ALPHA_CN_SHA1 -> { kind = GameKind.QUETZAL; nativeCfg = NATIVE_QUETZAL_CN }
                 QUETZAL_V9_0_ALPHA_ES_SHA1 -> { kind = GameKind.QUETZAL; nativeCfg = NATIVE_QUETZAL_ES }
                 QUETZAL_V9_1_ALPHA_SHA1 -> { kind = GameKind.QUETZAL; nativeCfg = NATIVE_QUETZAL_V1 }
                 QUETZAL_V9_1_ALPHA_ES_SHA1 -> { kind = GameKind.QUETZAL; nativeCfg = NATIVE_QUETZAL_ES_V1 }
@@ -798,6 +802,10 @@ class TelemetrySampler {
         // Its French fan translation (the same release's code and RAM, French text) - host-side
         // masked hash (GPIO bytes zero, so a plain `shasum`).
         const val UNBOUND_V2_1_1_1_FR_SHA1 = "0ce2a880aa097f1dce4e1db8ee513d0e82d15859"
+        // 解放（无界）v2.1.1.1 新汉化 beta0.281 - 对 v2.1.1.1 的纯翻译（分析见
+        // gamedata/gen3/hacks/unbound.toml 的 config.unbound_cn：gItems 等表全部
+        // 原位可解析）。遮蔽哈希（GPIO 洞清零）= 文件 shasum。
+        const val UNBOUND_V2_1_1_1_CN_SHA1 = "40104331f1899b23cd5b6cee9612b775e6bb4234"
         // Pokémon Gaia v3.2 - see NATIVE_GAIA_V3_2 in NativeReader.kt for the
         // verification this address reuse is based on.
         const val GAIA_V3_2_SHA1 = "d5b1e77975fcda831e0e9a7b527906bf3f40ecd0"
@@ -811,6 +819,12 @@ class TelemetrySampler {
         // file hash on a truly fresh boot, came out completely different
         // after resuming a session with real elapsed play time).
         const val RADICAL_RED_V4_1_SHA1 = "964f951a0fdaf209e4ea1344883ef0d557bb3a80"
+        // 激进红 v4.1 汉化版 - 纯翻译（config.radical_red_v4_1_cn；静态表校验 +
+        // 注入法动态验证 fixtures/radical_red_cn）。遮蔽哈希 = 文件 shasum。
+        const val RADICAL_RED_V4_1_CN_SHA1 = "f1772137ce263cf4357eecfc431b888b37e34369"
+        // 宝可梦水银 FC v1.33 - 国产 FireRed 深度改版，大量原生表保持原位
+        // （config.mercury_cn）。⚠ 仅静态验证，动态验证待游戏内存档补验。
+        const val MERCURY_V1_33_CN_SHA1 = "2d0d2b269199b90564e141518ad0e44cb2ada04f"
         // Pokemon Odyssey (English) v4.1.1 - confirmed live on-device 2026-09-22.
         const val ODYSSEY_V4_1_1_SHA1 = "8745ddbdbfadf6abaf66de4e9055923b62eb4668"
         // Emerald-based (BPEE) hacks - confirmed live on-device 2026-09-22 via
@@ -863,6 +877,9 @@ class TelemetrySampler {
         const val IMPERIUM_V1_3_1_SHA1 = "1d20091c4d936f5eb122db8780554dd0829ffb63"
         // Pokémon Quetzal English Alpha 9 v0 (BPEE, 32 MB) - host-side masked hash (GPIO bytes zero).
         const val QUETZAL_V9_0_ALPHA_SHA1 = "d0658315da1e8827f66f15c3d3a000fe747e163e"
+        // 格查尔 Alpha 9 v0 机翻汉化「作弊随时开关」- 对英文 Alpha 9 v0 的机器翻译
+        // （config.quetzal_cn：gItems @0x091E0594 描述指针全部原位可解析）。遮蔽哈希。
+        const val QUETZAL_V9_0_ALPHA_CN_SHA1 = "a905bb8712f5d934b40aca14e29939f578402bda"
         // Pokémon Quetzal Spanish Alpha 9 v0 (BPEE, 32 MB) - host-side masked hash (GPIO bytes zero).
         const val QUETZAL_V9_0_ALPHA_ES_SHA1 = "fe346b5b0eb022e3a103f81e7dcefba6f1dc542f"
         // Pokémon Quetzal English / Spanish Alpha 9 v1 (BPEE, 32 MB): plain `shasum`s (their GPIO bytes are zero).
@@ -1097,6 +1114,7 @@ class TelemetrySampler {
             FIRERED_ROCKET_EDITION_UNVERSIONED_SHA1, ASH_GRAY_V4_5_3_SHA1, ASH_GRAY_FORK_BUG_FIX_V1_0_SHA1,
             GHOST_GREY_V1_0_1_SHA1, GHOST_GREY_V1_0_2_SHA1, GHOST_GREY_V1_0_4_SHA1,
             ELITE_REDUX_V2_65_3B_SHA1, ELITE_REDUX_V2_65_4_1B_SHA1, TEAM_ROCKET_DRAGONSDEN_V1_5_SHA1,
+            UNBOUND_V2_1_1_1_CN_SHA1, RADICAL_RED_V4_1_CN_SHA1, MERCURY_V1_33_CN_SHA1, QUETZAL_V9_0_ALPHA_CN_SHA1,
             WISHES_OF_TOMORROW_V1_2_6_SHA1,
             DREAMSTONE_MYSTERIES_UNVERSIONED_SHA1,
             ULTRA_VIOLET_V1_22_SHA1, SWORD_SHIELD_ULTIMATE_PLUS_V1_2_1_2_SHA1, SWORD_SHIELD_ULTIMATE_PLUS_V1_2_1_2_CASUAL_SHA1,
