@@ -27,7 +27,7 @@ class GameDataMigrationTest {
     private val legacy = configs("LegacyNativeConfigsKt", "LEGACY_NATIVE_")
 
     /** Games added since the move, written in gamedata/ from the start: they have no hand-written config. */
-    private val bornInGamedata = setOf("WISHES", "DREAMSTONE")
+    private val bornInGamedata = setOf("WISHES", "DREAMSTONE", "UNBOUND_CN", "RADICAL_RED_V4_1_CN", "MERCURY_CN", "QUETZAL_CN", "TEAM_ROCKET_CN")
 
     @Test
     fun `every hand-written config has a generated one and no more`() {

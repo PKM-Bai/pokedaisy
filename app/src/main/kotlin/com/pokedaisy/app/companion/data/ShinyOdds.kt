@@ -132,6 +132,7 @@ object ShinyOdds {
         "5d6a036260fdbde96f85b5c1b92d0256d3aebafb" to 256, // SoulGold v1.2, second build (its own 1 in 256)
         "2be7c99aa473308debe1d03ff2015bab7d9addb5" to 256, // SoulGold v1.2, third build (its own 1 in 256)
         "40780347d0b4df6bf491eaf12603e5422caee677" to 8, // Team Rocket Edition: Dragonsden Version 1.5
+        "4ea5b01ee2feda127c230a0d2f80e1aa2b3b81b0" to 8, // 西火汉化 v3.04（同一引擎的纯翻译构建，闪率继承 8）
         "2f3e17e55c6afe23da97ec0f96a067eeb142ad15" to 8, // Elite Redux 2.65.4.1b (a shiny bit of its own; its roll's odds unknown)
         "5b38a681b6924ef3e0bb9f6cfbf22426c4c4e523" to 8, // Elite Redux 2.65.3b (a shiny bit of its own; its roll's odds unknown)
         "81bd0f4bfa1c04ab2c6faab1bddd10e8a390ea77" to 8, // R.O.W.E. v2.1.9.1 Experimental (a shiny bit of its own; its roll's odds unknown)
@@ -269,6 +270,7 @@ object ShinyOdds {
         "5d6a036260fdbde96f85b5c1b92d0256d3aebafb", // SoulGold v1.2, second build
         "2be7c99aa473308debe1d03ff2015bab7d9addb5", // SoulGold v1.2, third build
         "40780347d0b4df6bf491eaf12603e5422caee677", // Team Rocket Edition: Dragonsden Version 1.5
+        "4ea5b01ee2feda127c230a0d2f80e1aa2b3b81b0", // 西火汉化 v3.04
         "2f3e17e55c6afe23da97ec0f96a067eeb142ad15", // Elite Redux 2.65.4.1b
         "5b38a681b6924ef3e0bb9f6cfbf22426c4c4e523", // Elite Redux 2.65.3b
         "81bd0f4bfa1c04ab2c6faab1bddd10e8a390ea77", // R.O.W.E. v2.1.9.1 Experimental

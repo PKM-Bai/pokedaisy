@@ -546,6 +546,7 @@ class TelemetrySampler {
                 ELITE_REDUX_V2_65_3B_SHA1 -> { kind = GameKind.ELITE_REDUX; nativeCfg = NATIVE_ELITE_REDUX_V2_65_3B }
                 ELITE_REDUX_V2_65_4_1B_SHA1 -> { kind = GameKind.ELITE_REDUX; nativeCfg = NATIVE_ELITE_REDUX_V2_65_4_1B }
                 TEAM_ROCKET_DRAGONSDEN_V1_5_SHA1 -> { kind = GameKind.TEAM_ROCKET; nativeCfg = NATIVE_TEAM_ROCKET }
+                TEAM_ROCKET_DRAGONSDEN_V1_5_CN_SHA1 -> { kind = GameKind.TEAM_ROCKET; nativeCfg = NATIVE_TEAM_ROCKET_CN }
                 WISHES_OF_TOMORROW_V1_2_6_SHA1 -> { kind = GameKind.WISHES; nativeCfg = NATIVE_WISHES }
                 DREAMSTONE_MYSTERIES_UNVERSIONED_SHA1 -> { kind = GameKind.DREAMSTONE; nativeCfg = NATIVE_DREAMSTONE }
                 else -> {
@@ -931,6 +932,9 @@ class TelemetrySampler {
         // Pokémon Team Rocket Edition: Dragonsden Version 1.5 (its START menu says so; BPEE, 32 MB; DragonsdenTV's own build)
         // - host-side masked hash (GPIO bytes zero, so a plain `shasum`).
         const val TEAM_ROCKET_DRAGONSDEN_V1_5_SHA1 = "40780347d0b4df6bf491eaf12603e5422caee677"
+        // 宝可梦 火箭队（西火）汉化 v3.04 - pokeCIA 对 Dragonsden 1.5 的中文本地化，整份重编译
+        // （config.team_rocket_cn；注入法动态验证背包/金钱/队伍/地图 + 静态表校验）。遮蔽哈希 = 文件 shasum。
+        const val TEAM_ROCKET_DRAGONSDEN_V1_5_CN_SHA1 = "4ea5b01ee2feda127c230a0d2f80e1aa2b3b81b0"
         // Pokémon Wishes of Tomorrow v1.2.6 (FlatFoot Labs; BPEE, 32 MB, pokeemerald-expansion 1.15.3) - host-side masked
         // hash (GPIO bytes zero, so a plain `shasum`).
         const val WISHES_OF_TOMORROW_V1_2_6_SHA1 = "60182b934d2e8eb3eef226a9bbc25e5df6becd4f"
@@ -1120,6 +1124,7 @@ class TelemetrySampler {
             GHOST_GREY_V1_0_1_SHA1, GHOST_GREY_V1_0_2_SHA1, GHOST_GREY_V1_0_4_SHA1,
             ELITE_REDUX_V2_65_3B_SHA1, ELITE_REDUX_V2_65_4_1B_SHA1, TEAM_ROCKET_DRAGONSDEN_V1_5_SHA1,
             UNBOUND_V2_1_1_1_CN_SHA1, RADICAL_RED_V4_1_CN_SHA1, MERCURY_V1_33_CN_SHA1, QUETZAL_V9_0_ALPHA_CN_SHA1,
+            TEAM_ROCKET_DRAGONSDEN_V1_5_CN_SHA1,
             WISHES_OF_TOMORROW_V1_2_6_SHA1,
             DREAMSTONE_MYSTERIES_UNVERSIONED_SHA1,
             ULTRA_VIOLET_V1_22_SHA1, SWORD_SHIELD_ULTIMATE_PLUS_V1_2_1_2_SHA1, SWORD_SHIELD_ULTIMATE_PLUS_V1_2_1_2_CASUAL_SHA1,

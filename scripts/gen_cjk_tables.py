@@ -56,7 +56,11 @@ def main():
         "object CjkTables {",
     ]
     for key, sha, pairs in tables:
-        body = ",\n    ".join(", ".join(f"0x{p:08X}" for p in pairs[j:j + 8]) for j in range(0, len(pairs), 8))
+        # 码位 >= 0x8000 时 code<<16 超出 Int 上限，写成负的十进制（位模式相同，
+        # 解码器用 ushr 16 / and 0xFFFF 取值，按码位排序的二分查找不受影响）。
+        def lit(p: int) -> str:
+            return f"0x{p:08X}" if p < 0x80000000 else str(p - 0x100000000)
+        body = ",\n    ".join(", ".join(lit(p) for p in pairs[j:j + 8]) for j in range(0, len(pairs), 8))
         lines.append(f"    val {key.upper()} = intArrayOf(\n    {body},\n    )\n")
     lines.append("    /** The masked-ROM sha1 -> its charmap; Gen3Text.cjk at detection. */")
     lines.append("    fun forSha(sha1: String?): IntArray? = when (sha1) {")
