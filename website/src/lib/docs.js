@@ -160,7 +160,7 @@ function image(n, ctx) {
 }
 
 function frontMatter(src, file) {
-  const m = /^---\n([\s\S]*?)\n---\n/.exec(src);
+  const m = /^---\r?\n([\s\S]*?)\r?\n---\r?\n/.exec(src);
   if (!m) throw new Error(`${file}: starts without front matter (--- title: ... ---)`);
   const meta = YAML.parse(m[1]);
   for (const k of ['title', 'summary', 'section']) if (!meta[k]) throw new Error(`${file}: front matter needs "${k}"`);
