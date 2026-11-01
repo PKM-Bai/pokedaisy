@@ -2,7 +2,8 @@
 // every setting the app has is named somewhere in it. See docs/manual/README.md.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, readdirSync } from 'node:fs';
+import { readFileSync, readdirSync, mkdtempSync, cpSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createHash } from 'node:crypto';
 import { docsApi, docsDir, loadDocs, loadChineseDocs } from '../src/lib/docs.js';
@@ -81,7 +82,8 @@ test('Chinese manual keeps stable links, marks untranslated pages and matches th
   assert.equal(chinese.pages.find((p) => p.slug === 'screen').title, '屏幕、比例与着色器');
   assert.equal(chinese.pages.find((p) => p.slug === 'companion').title, '伴侣面板概览');
   assert.equal(chinese.pages.find((p) => p.slug === 'controls').title, '控制、快捷键和触屏');
-  assert.match(chinese.pages.find((p) => p.slug === 'settings-reference').title, /^未译：/);
+  assert.equal(chinese.pages.find((p) => p.slug === 'settings-reference').title, '设置参考');
+  assert.ok(chinese.pages.every((p) => !p.title.startsWith('未译：')));
   for (const page of chinese.pages) {
     assert.doesNotMatch(JSON.stringify(page.blocks), /\*\*/, `${page.slug}: unparsed bold markup`);
     const source = english.pages.find((p) => p.slug === page.slug);
@@ -109,4 +111,40 @@ test('Chinese supported games table preserves hack names and version numbers', (
   const chinese = rows(text('zh-hans/supported-games.md'));
   assert.ok(english.length > 20);
   assert.deepEqual(chinese, english);
+});
+
+
+test('missing or stale Chinese manual pages retain marked English text', () => {
+  const copy = mkdtempSync(join(tmpdir(), 'pokedaisy-docs-'));
+  try {
+    cpSync(dir, copy, { recursive: true });
+    rmSync(join(copy, 'zh-hans', 'welcome.md'));
+    const settings = join(copy, 'zh-hans', 'settings-reference.md');
+    writeFileSync(settings, readFileSync(settings, 'utf8').replace(/source_sha256: [a-f0-9]+/, 'source_sha256: stale'));
+    const docs = loadChineseDocs(copy);
+    for (const slug of ['welcome', 'settings-reference']) {
+      const page = docs.pages.find((p) => p.slug === slug);
+      assert.match(page.title, /^未译：/);
+      assert.match(page.blocks[0].c[0].text, /以下保留英文原文/);
+    }
+  } finally {
+    rmSync(copy, { recursive: true, force: true });
+  }
+});
+
+
+test('Chinese settings reference mentions every documented setting label', () => {
+  const ktDir = join(dir, '../../app/src/main/kotlin/com/pokedaisy/app/companion/i18n');
+  const translated = new Map();
+  for (const file of readdirSync(ktDir).filter((f) => /^Tr.*\.kt$/.test(f))) {
+    for (const line of readFileSync(join(ktDir, file), 'utf8').split('\n')) {
+      const match = line.match(/^\s*"([^"]+)" to Tr\(.*\bzh = "([^"]+)"/);
+      if (match) translated.set(match[1], match[2]);
+    }
+  }
+  const keys = [...text('settings-reference.md').matchAll(/^\| `([^`]+)` \|/gm)].map((m) => m[1]);
+  const chinese = text('zh-hans/settings-reference.md');
+  const missing = [...new Set(keys)].filter((key) => !chinese.includes(translated.get(key) ?? key));
+  assert.ok(keys.length > 50);
+  assert.deepEqual(missing, []);
 });
