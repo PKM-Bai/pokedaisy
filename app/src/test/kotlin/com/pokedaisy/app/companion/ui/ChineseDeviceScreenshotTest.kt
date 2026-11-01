@@ -3,6 +3,7 @@ package com.pokedaisy.app.companion.ui
 import android.graphics.Bitmap
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -87,6 +88,16 @@ class ChineseDeviceScreenshotTest(private val device: String, private val config
 
     // Isolate the lower rows so the small screen captures both ability labels and their values.
     @Test fun unverifiedDexAbilities() = dexInfo(exampleDex().copy(description = "", baseStats = emptyList()))
+
+    @Test fun unverifiedDexMove() = shot { AppTheme {
+        Box(Modifier.fillMaxSize()) {
+            Column(Modifier.fillMaxWidth(0.58f).fillMaxHeight().padding(12.dp)) {
+                val small = rememberGbaTextMetrics(1f)
+                MoveLine("等级 100", 225, small)
+                MoveLine("", 0, small)
+            }
+        }
+    } }
 
     @Test fun manual() {
         val root = generateSequence(File("").absoluteFile) { it.parentFile }.first { File(it, "settings.gradle.kts").isFile }

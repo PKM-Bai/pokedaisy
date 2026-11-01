@@ -46,9 +46,12 @@ import com.pokedaisy.app.companion.data.hasLearnsets
 import com.pokedaisy.app.companion.data.itemName
 import com.pokedaisy.app.companion.data.lookupLocation
 import com.pokedaisy.app.companion.data.lookupMove
+import com.pokedaisy.app.companion.data.untranslatedGameText
 import com.pokedaisy.app.companion.data.speciesName
 import com.pokedaisy.app.companion.data.spriteAsset
 import com.pokedaisy.app.companion.data.typeName
+import com.pokedaisy.app.companion.i18n.AppLanguage
+import com.pokedaisy.app.companion.i18n.L10n
 import com.pokedaisy.app.companion.i18n.tk
 import com.pokedaisy.app.companion.i18n.tr
 import kotlinx.coroutines.Dispatchers
@@ -373,15 +376,17 @@ private fun LazyListScope.header(text: String, small: GbaTextMetrics) = item {
 }
 
 @Composable
-private fun MoveLine(label: String, move: Int, small: GbaTextMetrics) {
+internal fun MoveLine(label: String, move: Int, small: GbaTextMetrics) {
     val u = small.u
     val info = lookupMove(move)
     Row(
         Modifier.fillMaxWidth().drawBehind { drawRowDivider(OptionColors.divider, u.toPx(), 0f) }.padding(vertical = u * 2),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (label.isNotEmpty()) GbaText(label, OptionColors.value, OptionColors.valueShadow, small, Modifier.width(u * 40))
-        GbaText(info.name, OptionColors.label, OptionColors.labelShadow, small, Modifier.weight(1f))
+        if (label.isNotEmpty()) GbaText(label, OptionColors.value, OptionColors.valueShadow, small,
+            Modifier.width(u * if (L10n.language == AppLanguage.ZH_CN) 72 else 40))
+        GbaText(if (move == 0) info.name else untranslatedGameText(info.name), OptionColors.label, OptionColors.labelShadow, small, Modifier.weight(1f),
+            maxLines = if (L10n.language == AppLanguage.ZH_CN) Int.MAX_VALUE else 1)
         typeName(info.type).takeIf { it.isNotEmpty() }?.let { TypeBadge(it, fontSize = 11.sp) }
     }
 }
