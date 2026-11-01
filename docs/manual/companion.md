@@ -158,7 +158,7 @@ The app's own text comes in English, Japanese, French, German, Italian, Spanish,
 
 On a device set to Portuguese or Simplified Chinese, `AUTO` uses that language over an English game too. The GUIDE's written pages stay in English in Portuguese and Simplified Chinese. The HELP manual is currently in English.
 
-This only changes PokeDaisy's words (buttons, labels, hints). Pokémon, move and item names stay as your game has them, so a French game shows its French names whatever you pick, and an English game keeps its English ones.
+This changes PokeDaisy's words (buttons, labels, hints). In Simplified Chinese, standard type names are translated too. Pokémon, move and item names stay as your game has them, so a French game shows its French names whatever you pick, and an English game keeps its English ones.
 
 ## Closing and restarting
 
