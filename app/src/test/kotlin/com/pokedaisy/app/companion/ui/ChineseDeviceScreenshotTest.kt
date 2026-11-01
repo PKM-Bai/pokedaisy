@@ -99,6 +99,22 @@ class ChineseDeviceScreenshotTest(private val device: String, private val config
         }
     } }
 
+    @Test fun unverifiedItemDescription() = shot { AppTheme {
+        val item = com.pokedaisy.app.companion.data.ItemView(
+            9999, "CUSTOM ITEM", 1, null,
+            description = "This ROM-specific item has a long description. Its effect may differ between versions. " +
+                "The original text must remain readable while the action buttons stay reachable.",
+        )
+        val actions = object : com.pokedaisy.app.companion.ItemUse {
+            override fun canUse(itemId: Int) = true
+            override fun canGive(itemId: Int) = true
+            override fun use(itemId: Int, done: (com.pokedaisy.app.companion.data.ItemUseOutcome) -> Unit) = Unit
+        }
+        Box(Modifier.fillMaxSize()) {
+            ItemsScreen(listOf(item), modifier = Modifier.fillMaxWidth().fillMaxHeight(0.84f), itemUse = actions, initialItemId = item.itemId)
+        }
+    } }
+
     @Test fun manual() {
         val root = generateSequence(File("").absoluteFile) { it.parentFile }.first { File(it, "settings.gradle.kts").isFile }
         val manual = DocsApi.parse(File(root, "app/src/main/assets/docs-zh-hans.json").readText(Charsets.UTF_8))

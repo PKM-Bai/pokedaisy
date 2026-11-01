@@ -7,6 +7,8 @@ import com.pokedaisy.app.companion.ui.theme.nightSurface
 import com.pokedaisy.app.companion.ui.theme.nightShadow
 import com.pokedaisy.app.companion.ui.theme.nightInk
 import com.pokedaisy.app.companion.FavoriteItems
+import com.pokedaisy.app.companion.i18n.AppLanguage
+import com.pokedaisy.app.companion.i18n.L10n
 import com.pokedaisy.app.companion.i18n.tk
 import com.pokedaisy.app.companion.i18n.tr
 import androidx.compose.foundation.Canvas
@@ -55,6 +57,7 @@ import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import com.pokedaisy.app.companion.data.RomArt
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.IntOffset
@@ -78,6 +81,7 @@ import com.pokedaisy.app.companion.data.ItemUseResult
 import com.pokedaisy.app.companion.data.ItemView
 import com.pokedaisy.app.companion.data.MonView
 import com.pokedaisy.app.companion.data.itemName
+import com.pokedaisy.app.companion.data.untranslatedGameText
 import com.pokedaisy.app.companion.data.POCKET_BERRIES
 import com.pokedaisy.app.companion.data.POCKET_ITEMS
 import com.pokedaisy.app.companion.data.POCKET_KEY_ITEMS
@@ -906,7 +910,8 @@ fun ItemsScreen(
         return
     }
 
-    Box(modifier = modifier) {
+    BoxWithConstraints(modifier = modifier) {
+        val descriptionMaxHeight = maxHeight * 0.48f
         // HeartGold / SoulSilver: the game's own bag layout - the pockets as icon tabs along the top, the items as cards in
         // two columns (HgssBagBody).
         if (hgss) HgssBagBody(
@@ -1032,6 +1037,7 @@ fun ItemsScreen(
                 onFavorite = { FavoriteItems.toggle(item.itemId) },
                 actionFocus = actionFocus,
                 message = message,
+                maxTextHeight = descriptionMaxHeight,
                 // An item used or given away to the last leaves the bag: nothing left to tap.
                 onUse = itemUse?.takeIf { it.canUse(item.itemId) && items.any { i -> i.itemId == item.itemId } }?.let { use ->
                     {
@@ -1549,6 +1555,10 @@ private fun BagCursor(pal: BagPalette, m: GbaTextMetrics) {
     }
 }
 
+/** App-generated action messages stay translated; only unverified game-owned text gets the marker. */
+internal fun itemDescriptionText(item: ItemView, message: String?): String =
+    message ?: untranslatedGameText(item.description.ifEmpty { item.name })
+
 /**
  * The vanilla bottom description bar - a two-tone edge, the item's icon in a
  * white box and white outlined text (never truncated) - as a fully framed
@@ -1563,6 +1573,8 @@ private fun ItemDescriptionBar(
     onFavorite: (() -> Unit)? = null,
     /** What the last USE / GIVE did, in place of the description. */
     message: String? = null,
+    /** Bound Chinese text to leave room for the list and action buttons on a small screen. */
+    maxTextHeight: Dp,
     /** USE / GIVE buttons; null = none for this item here. */
     onUse: (() -> Unit)? = null,
     onGive: (() -> Unit)? = null,
@@ -1603,12 +1615,28 @@ private fun ItemDescriptionBar(
         ) {
             ItemIcon(item.iconAsset, size = u * 24)
         }
-        GbaText(
-            message ?: item.description.ifEmpty { item.name },
-            pal.descText, pal.descTextShadow, m,
-            maxLines = Int.MAX_VALUE,
-            modifier = Modifier.padding(start = if (hasIcon) u * 8 else 0.dp).weight(1f),
-        )
+        val textModifier = Modifier.padding(start = if (hasIcon) u * 8 else 0.dp).weight(1f)
+        if (L10n.language == AppLanguage.ZH_CN) {
+            val scroll = rememberScrollState()
+            LaunchedEffect(item.itemId, message) { scroll.scrollTo(0) }
+            Box(textModifier.heightIn(max = maxTextHeight)) {
+                Column(
+                    Modifier.fillMaxWidth().dpadScroll(scroll, RectangleShape, m.lineHeight * 3)
+                        .verticalScroll(scroll).padding(end = u * 4),
+                ) {
+                    GbaText(itemDescriptionText(item, message), pal.descText, pal.descTextShadow, m, maxLines = Int.MAX_VALUE)
+                }
+                if (scroll.maxValue > 0) Canvas(Modifier.align(Alignment.CenterEnd).fillMaxHeight().width(u * 2)) {
+                    val thumb = (size.height * size.height / (size.height + scroll.maxValue)).coerceIn(minOf(u.toPx() * 6, size.height), size.height)
+                    val top = (size.height - thumb) * scroll.value / scroll.maxValue
+                    drawRect(pal.descText.copy(alpha = 0.22f))
+                    drawRect(pal.descText, topLeft = Offset(0f, top), size = Size(size.width, thumb))
+                }
+            }
+        } else {
+            GbaText(itemDescriptionText(item, message), pal.descText, pal.descTextShadow, m,
+                maxLines = Int.MAX_VALUE, modifier = textModifier)
+        }
         if (onFavorite != null || onUse != null || onGive != null) {
             // The star in the card's top-right corner, USE / GIVE in its bottom-right one.
             Column(

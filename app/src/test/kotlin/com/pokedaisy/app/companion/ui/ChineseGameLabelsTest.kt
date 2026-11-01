@@ -11,6 +11,16 @@ class ChineseGameLabelsTest {
     private val originalGame = activeGame
     @After fun reset() { activeGame = originalGame; L10n.apply("EN", null) }
 
+    @Test fun `item descriptions mark game text but preserve action messages`() {
+        val item = com.pokedaisy.app.companion.data.ItemView(9999, "CUSTOM ITEM", 1, null, description = "Changed ROM effect.")
+        L10n.apply("ZH_CN", null)
+        assertEquals("未译：Changed ROM effect.", itemDescriptionText(item, null))
+        assertEquals("未译：CUSTOM ITEM", itemDescriptionText(item.copy(description = ""), null))
+        assertEquals("使用成功", itemDescriptionText(item, "使用成功"))
+        L10n.apply("EN", null)
+        assertEquals("Changed ROM effect.", itemDescriptionText(item, null))
+    }
+
     @Test fun `bag names and early battle labels follow Chinese without changing game actions`() {
         L10n.apply("ZH_CN", null)
         val cases = mapOf(GameKind.UNBOUND to "立方包", GameKind.ROWE to "物品栏", GameKind.MARIOMON to "口袋", GameKind.CRYSTAL to "背包", GameKind.RED to "道具")
