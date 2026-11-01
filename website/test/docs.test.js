@@ -76,6 +76,7 @@ test('Chinese manual keeps stable links, marks untranslated pages and matches th
   assert.equal(chinese.pages.find((p) => p.slug === 'devices').title, '屏幕与设备');
   assert.equal(chinese.pages.find((p) => p.slug === 'linux').title, 'Linux 掌机基础版本');
   assert.equal(chinese.pages.find((p) => p.slug === 'troubleshooting').title, '故障排查与常见问题');
+  assert.equal(chinese.pages.find((p) => p.slug === 'supported-games').title, '支持的游戏');
   assert.match(chinese.pages.find((p) => p.slug === 'controls').title, /^未译：/);
   for (const page of chinese.pages) {
     assert.doesNotMatch(JSON.stringify(page.blocks), /\*\*/, `${page.slug}: unparsed bold markup`);
@@ -92,4 +93,16 @@ test('Chinese manual keeps stable links, marks untranslated pages and matches th
   for (const file of readdirSync(join(dir, 'zh-hans')).filter((f) => f.endsWith('.md'))) {
     assert.ok(!chinese.pages.find((p) => p.slug === file.slice(0, -3)).title.startsWith('未译：'), `${file}: source changed`);
   }
+});
+
+
+test('Chinese supported games table preserves hack names and version numbers', () => {
+  const rows = (source) => source.split('\n').filter((line) => /^\| (?:Pokémon|Celia|Sword|Emerald|Too Many|Moemon|Super)/.test(line)).map((line) => {
+    const [, name, versions] = line.split('|');
+    return [name.trim(), [...versions.matchAll(/\d+(?:\.\d+)*(?:[a-z])?/gi)].map((match) => match[0])];
+  });
+  const english = rows(text('supported-games.md'));
+  const chinese = rows(text('zh-hans/supported-games.md'));
+  assert.ok(english.length > 20);
+  assert.deepEqual(chinese, english);
 });

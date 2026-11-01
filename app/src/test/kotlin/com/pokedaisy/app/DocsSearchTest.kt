@@ -88,6 +88,7 @@ class DocsSearchTest {
         assertEquals("屏幕与设备", chinese.page("devices")?.title)
         assertEquals("Linux 掌机基础版本", chinese.page("linux")?.title)
         assertEquals("故障排查与常见问题", chinese.page("troubleshooting")?.title)
+        assertEquals("支持的游戏", chinese.page("supported-games")?.title)
         assertTrue(chinese.page("controls")!!.title.startsWith("未译："))
         assertEquals("install", DocsSearch(chinese).search("初次设置").first().page)
         assertEquals("guide", DocsSearch(chinese).search("攻略").first().page)
@@ -102,6 +103,7 @@ class DocsSearchTest {
         assertEquals("devices", DocsSearch(chinese).search("屏幕与设备").first().page)
         assertEquals("linux", DocsSearch(chinese).search("Linux 掌机基础版本").first().page)
         assertEquals("troubleshooting", DocsSearch(chinese).search("故障排查与常见问题").first().page)
+        assertEquals("supported-games", DocsSearch(chinese).search("支持的游戏").first().page)
     }
 
     @Test
