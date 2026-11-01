@@ -83,6 +83,8 @@ class DocsSearchTest {
         assertEquals("NUZLOCKE 挑战", chinese.page("nuzlocke")?.title)
         assertEquals("RetroAchievements 成就", chinese.page("achievements")?.title)
         assertEquals("快进与游戏速度", chinese.page("fast-forward")?.title)
+        assertEquals("存档、备份和即时存档", chinese.page("saves")?.title)
+        assertEquals("HUD", chinese.page("hud")?.title)
         assertTrue(chinese.page("devices")!!.title.startsWith("未译："))
         assertEquals("install", DocsSearch(chinese).search("初次设置").first().page)
         assertEquals("guide", DocsSearch(chinese).search("攻略").first().page)
@@ -93,6 +95,7 @@ class DocsSearchTest {
         assertEquals("battle", DocsSearch(chinese).search("对战").first().page)
         assertEquals("cheats", DocsSearch(chinese).search("金手指").first().page)
         assertEquals("fast-forward", DocsSearch(chinese).search("快进与游戏速度").first().page)
+        assertEquals("saves", DocsSearch(chinese).search("存档、备份和即时存档").first().page)
     }
 
     @Test

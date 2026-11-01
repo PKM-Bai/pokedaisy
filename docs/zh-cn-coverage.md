@@ -25,7 +25,7 @@
 
 ## 帮助手册
 
-- 24 页共享手册中，`welcome.md`、`install.md`、`party.md`、`bag.md`、`battle.md`、`map.md`、`dex.md`、`guide.md`、`trainer-card.md`、`achievements.md`、`fast-forward.md`、`cheats.md` 和 `nuzlocke.md` 已有中文页面；其余 11 页保留英文并标记 `未译`。中文页与英文源文件通过 SHA-256 关联：英文变动后，旧译文会回退为标记的英文原文，直到重新校对。
+- 24 页共享手册中，`welcome.md`、`install.md`、`party.md`、`bag.md`、`battle.md`、`map.md`、`dex.md`、`guide.md`、`trainer-card.md`、`achievements.md`、`fast-forward.md`、`cheats.md`、`nuzlocke.md`、`saves.md` 和 `hud.md` 已有中文页面；其余 9 页保留英文并标记 `未译`。中文页与英文源文件通过 SHA-256 关联：英文变动后，旧译文会回退为标记的英文原文，直到重新校对。
 - 网站中文页面、中文 API 和应用离线数据由同一份手册生成。应用内置已翻译页面的图片，搜索支持中文短语。现有插图是英文界面截图，尚需制作中文截图。
 - 在 `website/` 运行 `node scripts/generate-zh-manual.js` 更新离线数据和已翻译页面的图片。`npm test` 检查链接、离线副本、图片散列、中文搜索及已有译文的源文件版本。
 
