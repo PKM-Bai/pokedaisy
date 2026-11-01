@@ -9,6 +9,8 @@ import com.pokedaisy.app.companion.i18n.AppLanguage
 import com.pokedaisy.app.companion.i18n.L10n
 import com.pokedaisy.app.companion.ui.theme.AppTheme
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.unit.dp
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -110,11 +112,13 @@ class LocalizedScreenshotTest(private val lang: AppLanguage) {
     @Test fun dex() = tab("DEX")
     @Test fun dexNameRows() = paparazzi.snapshot(lang.code) {
         AppTheme {
-            androidx.compose.foundation.layout.Column {
+            androidx.compose.foundation.layout.Column(modifier = androidx.compose.ui.Modifier.padding(start = 4.dp)) {
                 val m = rememberGbaTextMetrics()
                 DexRow(1, 1, 1, caught = true, seen = true, m = m, small = m) {}
                 DexRow(25, 25, 1, caught = true, seen = true, m = m, small = m) {}
                 GbaText(com.pokedaisy.app.companion.data.dexSpeciesLabel(1017, "OGERPON"),
+                    androidx.compose.ui.graphics.Color.Black, androidx.compose.ui.graphics.Color.LightGray, m)
+                GbaText(com.pokedaisy.app.companion.data.dexSpeciesLabel(1, "改版专属"),
                     androidx.compose.ui.graphics.Color.Black, androidx.compose.ui.graphics.Color.LightGray, m)
             }
         }

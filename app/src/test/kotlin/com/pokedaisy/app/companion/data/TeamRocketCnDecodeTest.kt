@@ -4,6 +4,9 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
+import org.junit.Assume.assumeTrue
+import java.io.File
+import java.security.MessageDigest
 import org.junit.Test
 
 /**
@@ -54,6 +57,33 @@ class TeamRocketCnDecodeTest {
         assertEquals("三圣鸟", decode("3e 1e 3e 82 3c 68 ff"))
         // 感叹号收尾（对白结尾码位，全 ROM 54 处串尾一致）
         assertEquals("可以！", decode("3a 38 42 05 2f 35 ff"))
+    }
+
+    /** Optional user-supplied ROM; no game files or private paths are included in the repository. */
+    @Test
+    fun `known Chinese ROM item name decodes from its actual item table`() {
+        val dir = System.getenv("POKEDAISY_SAMPLE_DIR")?.let(::File)
+        assumeTrue("set POKEDAISY_SAMPLE_DIR to test local samples", dir?.isDirectory == true)
+        val sha = "4ea5b01ee2feda127c230a0d2f80e1aa2b3b81b0"
+        fun digest(file: File): String = file.inputStream().use { input ->
+            val md = MessageDigest.getInstance("SHA-1")
+            val buffer = ByteArray(64 * 1024)
+            while (true) {
+                val n = input.read(buffer)
+                if (n < 0) break
+                md.update(buffer, 0, n)
+            }
+            md.digest().joinToString("") { "%02x".format(it) }
+        }
+        val rom = dir!!.walkTopDown().firstOrNull { it.isFile && it.extension.equals("gba", true) && digest(it) == sha }
+        assumeTrue("the known Chinese Team Rocket sample is not present", rom != null)
+        val bytes = rom!!.readBytes()
+        val entry = 0x008cc594 + 13 * 44 // item #13 in this exact build
+        val ptr = (0..3).fold(0L) { value, i -> value or ((bytes[entry + i].toLong() and 0xff) shl (i * 8)) }
+        val offset = (ptr - 0x08000000L).toInt()
+        require(offset >= 0 && offset + 32 <= bytes.size) { "invalid item-name pointer" }
+        Gen3Text.cjk = table
+        assertEquals("重复球", Gen3Text.decode(bytes.copyOfRange(offset, offset + 32)))
     }
 
     @Test

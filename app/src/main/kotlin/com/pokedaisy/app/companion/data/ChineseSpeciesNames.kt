@@ -13,7 +13,5 @@ fun dexSpeciesLabel(national: Int, original: String): String {
     if (L10n.language != AppLanguage.ZH_CN || original.isBlank()) return original
     val entry = chineseSpeciesNames.getOrNull(national)?.split('|')
     if (entry != null && entry.any { it.equals(original.trim(), ignoreCase = true) }) return entry.first()
-    // A Chinese fan translation's own names are already readable: preserve them.
-    if (original.any { it in '\u3400'..'\u9fff' }) return original
     return "未译：$original"
 }
