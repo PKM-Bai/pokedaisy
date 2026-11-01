@@ -60,6 +60,7 @@ test('Chinese manual keeps stable links, marks untranslated pages and matches th
   assert.equal(chinese.pages.length, english.pages.length);
   assert.equal(chinese.pages.find((p) => p.slug === 'welcome').title, '欢迎使用 PokeDaisy');
   assert.equal(chinese.pages.find((p) => p.slug === 'install').title, '安装与初次设置');
+  assert.equal(chinese.pages.find((p) => p.slug === 'guide').title, '攻略');
   assert.match(chinese.pages.find((p) => p.slug === 'devices').title, /^未译：/);
   for (const page of chinese.pages) {
     const source = english.pages.find((p) => p.slug === page.slug);
