@@ -16,6 +16,7 @@
 
 ## 游戏资料
 
+- [版本级样本与核验清单](zh-cn-game-inventory.md) 从代码中的 66 个 GBA 改版配置生成，列出本次样本盘点及未核验状态；其他受支持游戏另列。该清单不代替每条资料的来源和版本核验。
 - 图鉴物种名称表来自 [PokeAPI 固定提交的 pokemon_species_names.csv](https://github.com/PokeAPI/pokeapi/blob/6b8db7f3cb31cfaa37cb74e5c3edff124bcba5ce/data/v2/csv/pokemon_species_names.csv)，覆盖全国图鉴编号 1 至 1025。来源文件 SHA-256、许可及生成方式记录在 `scripts/gen_zh_species.py` 和 `NOTICE` 中。三处简体字修正的官方来源记录在生成脚本中；其余条目尚未逐条与官方来源独立复核。
 - 图鉴只在全国图鉴编号与 ROM 原名称都匹配时显示该表译名；不匹配的名称（包括汉字名称）保留原文并标记 `未译`。玩家昵称不经该函数改写。该匹配仍需对每个支持的游戏和改版版本使用实际样本逐项验证。
 - 标准属性标签在显示时翻译，逻辑使用原有属性标识。非标准属性和改版属性仍需逐项核验。
