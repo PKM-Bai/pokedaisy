@@ -56,6 +56,17 @@ class LocalizedScreenshotTest(private val lang: AppLanguage) {
     @Test fun party() = tab("PARTY")
     @Test fun items() = tab("ITEMS")
     @Test fun dex() = tab("DEX")
+    @Test fun dexNameRows() = paparazzi.snapshot(lang.code) {
+        AppTheme {
+            androidx.compose.foundation.layout.Column {
+                val m = rememberGbaTextMetrics()
+                DexRow(1, 1, 1, caught = true, seen = true, m = m, small = m) {}
+                DexRow(25, 25, 1, caught = true, seen = true, m = m, small = m) {}
+                GbaText(com.pokedaisy.app.companion.data.dexSpeciesLabel(1017, "OGERPON"),
+                    androidx.compose.ui.graphics.Color.Black, androidx.compose.ui.graphics.Color.LightGray, m)
+            }
+        }
+    }
     @Test fun guide() = tab("GUIDE")
     @Test fun map() = tab("MAP")
     @Test fun states() = tab("STATES")

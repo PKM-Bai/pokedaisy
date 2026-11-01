@@ -61,6 +61,8 @@ The app shows every license below in full under Settings > LICENSES.
   M+ FONT LICENSE (app/src/main/assets/fonts/LICENSE-PixelMplus.txt); cut to
   Japanese and rescaled by scripts/gen_jp_font.py.
 - PokeAPI (https://pokeapi.co), BSD 3-Clause: the National Dex species list
+  and Simplified Chinese species names and verification aliases, from
+  pokemon_species_names.csv at commit 6b8db7f3cb31cfaa37cb74e5c3edff124bcba5ce
   (third_party/licenses/PokeAPI-BSD-3-Clause.txt).
 - AndroidX, Jetpack Compose, Kotlin, kotlinx.coroutines and Apache Commons
   Compress (with Commons IO, Codec and Lang), Apache License 2.0

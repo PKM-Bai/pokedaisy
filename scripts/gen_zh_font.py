@@ -50,7 +50,7 @@ for code in range(0x10000):
         pass
 keep.update(range(0x3000, 0x3040))   # CJK punctuation 、。「」々〆
 keep.update(range(0xFF00, 0xFFEF))   # full-width forms ０－９！？：；
-keep.update(ord(c) for c in "—–…·×÷℃‰『』「」〈〉《》")
+keep.update(ord(c) for c in "—–…·×÷℃‰『』「」〈〉《》椪")  # 厄诡椪 (National Dex 1017)
 keep = [c for c in keep if c in src.getBestCmap()]
 sub = subset.Subsetter(subset.Options(name_IDs=["*"], name_languages=["*"], notdef_outline=True))
 sub.populate(unicodes=keep)

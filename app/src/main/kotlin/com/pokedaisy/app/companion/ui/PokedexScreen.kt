@@ -53,6 +53,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.pokedaisy.app.companion.data.DexEntry
+import com.pokedaisy.app.companion.data.dexSpeciesLabel
 import com.pokedaisy.app.companion.data.GameKind
 import com.pokedaisy.app.companion.data.GuideTables
 import com.pokedaisy.app.companion.data.activeGame
@@ -214,7 +215,7 @@ fun PokedexScreen(dex: PokedexState, ui: DexUiState, modifier: Modifier = Modifi
                 LazyColumn(Modifier.fillMaxSize(), state = ui.list) {
                     items(entries, key = { it }) { n ->
                         DexRow(
-                            order.number(n), species?.getOrNull(n) ?: 0, n in dex.caught, n in dex.seen, m, small,
+                            order.number(n), n, species?.getOrNull(n) ?: 0, n in dex.caught, n in dex.seen, m, small,
                             start = n == (back ?: top),
                         ) { ui.lastOpened = n; ui.open = n }
                     }
@@ -235,8 +236,8 @@ private fun CountLine(label: String, value: Int, small: GbaTextMetrics) {
 /** "● [icon] No.025 PIKACHU" - the ball marks a caught entry, a grey one a seen one.
  * [n] is the number in the dex being shown. */
 @Composable
-private fun DexRow(
-    n: Int, species: Int, caught: Boolean, seen: Boolean,
+internal fun DexRow(
+    n: Int, national: Int, species: Int, caught: Boolean, seen: Boolean,
     m: GbaTextMetrics, small: GbaTextMetrics,
     /** Where the D-pad starts in the list (the companion's window). */
     start: Boolean = false,
@@ -266,7 +267,7 @@ private fun DexRow(
         GbaText(dexNo(n), OptionColors.muted, OptionColors.mutedShadow, small)
         Spacer(Modifier.width(u * 8))
         GbaText(
-            if (species > 0) speciesName(species) else "-----",
+            if (species > 0) dexSpeciesLabel(national, speciesName(species)) else "-----",
             if (seen) OptionColors.label else OptionColors.muted,
             if (seen) OptionColors.labelShadow else OptionColors.mutedShadow,
             m, Modifier.weight(1f),
@@ -365,7 +366,7 @@ private fun EntryPage(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 GbaText(dexNo(shownNo), OptionColors.value, OptionColors.valueShadow, small)
                 Spacer(Modifier.width(u * 6))
-                GbaText(if (species > 0) speciesName(species) else "-----", OptionColors.label, OptionColors.labelShadow, m, Modifier.weight(1f))
+                GbaText(if (species > 0) dexSpeciesLabel(n, speciesName(species)) else "-----", OptionColors.label, OptionColors.labelShadow, m, Modifier.weight(1f))
                 DexMark(caught, seen, Modifier.size(u * 12))
             }
             // The sprite gets whatever height the text below leaves it.
