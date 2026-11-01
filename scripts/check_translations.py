@@ -36,7 +36,7 @@ def code_only(text):
 def tables():
     out, dupes = {}, []
     for f in sorted(I18N.glob("Tr*.kt")):
-        for m in ENTRY.finditer(f.read_text()):
+        for m in ENTRY.finditer(f.read_text(encoding="utf-8")):
             if m.group(1) in out:
                 dupes.append(f"{f.name}: {m.group(1)!r} is already in {out[m.group(1)][0]} - keep one")
             out[m.group(1)] = (f.name, m.groups()[1:])
@@ -51,7 +51,7 @@ def main():
     for f in sorted(SRC.rglob("*.kt")):
         if f.parent == I18N and f.name.startswith("Tr"):
             continue
-        text = code_only(f.read_text())
+        text = code_only(f.read_text(encoding="utf-8"))
         for m in CALL.finditer(text):
             key = m.group(1)
             used.add(key)
