@@ -277,7 +277,8 @@ fun pixelFontFamily(): FontFamily {
     LocalGameFont.current?.let { return it }
     val context = LocalContext.current
     // Pixel Operator + its Japanese fallback (PixelTypeface.kt), one per process.
-    return com.pokedaisy.app.pixelFontFamily(context)
+    val preferChinese = com.pokedaisy.app.companion.i18n.L10n.language == com.pokedaisy.app.companion.i18n.AppLanguage.ZH_CN
+    return com.pokedaisy.app.pixelFontFamily(context, preferChinese)
 }
 
 /**
@@ -313,7 +314,8 @@ fun rememberGameFont(game: GameKind?): FontFamily? {
     val context = LocalContext.current
     val gen = com.pokedaisy.app.companion.ui.rememberArtGeneration()
     val language = com.pokedaisy.app.companion.data.romLanguage
-    return remember(game, gen, language) {
+    val preferChinese = com.pokedaisy.app.companion.i18n.L10n.language == com.pokedaisy.app.companion.i18n.AppLanguage.ZH_CN
+    return remember(game, gen, language, preferChinese) {
         val path = when (game) {
             GameKind.YELLOW -> com.pokedaisy.app.companion.data.Gen1Art.yellowFont(com.pokedaisy.app.companion.data.romLanguage)
             GameKind.RED, GameKind.BLUE -> com.pokedaisy.app.companion.data.Gen1Art.RED_BLUE_FONT
@@ -325,7 +327,7 @@ fun rememberGameFont(game: GameKind?): FontFamily? {
             GameKind.GOLD, GameKind.SILVER -> com.pokedaisy.app.companion.data.Gen2Art.GOLD_SILVER_FONT
             else -> null
         } ?: return@remember null
-        com.pokedaisy.app.companion.data.RomArt.file(context.filesDir, path)?.let { com.pokedaisy.app.gameFontFamily(context, it) }
+        com.pokedaisy.app.companion.data.RomArt.file(context.filesDir, path)?.let { com.pokedaisy.app.gameFontFamily(context, it, preferChinese) }
     }
 }
 

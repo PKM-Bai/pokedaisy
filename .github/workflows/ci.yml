@@ -44,7 +44,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@748248ddd2a24f49513d8f472f81c3a07d4d50e1 # v4.4.4
 
       - name: Translations
-        run: python3 scripts/check_translations.py
+        run: python3 scripts/check_translations.py --require-zh
 
       # The per-game code generated from gamedata/ must match it (gamedata/README.md).
       - name: Game data

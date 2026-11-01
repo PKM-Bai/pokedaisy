@@ -69,6 +69,20 @@ class TranslationsTest {
         assertEquals(AppLanguage.EN, L10n.language)
         L10n.apply(LANGUAGE_AUTO, null, Locale.forLanguageTag("ko-KR"))
         assertEquals(AppLanguage.EN, L10n.language)
+        // Simplified Chinese follows the device over English, but not other ROM languages.
+        L10n.apply(LANGUAGE_AUTO, null, Locale.forLanguageTag("zh-Hans-CN"))
+        assertEquals(AppLanguage.ZH_CN, L10n.language)
+        L10n.apply(LANGUAGE_AUTO, "BPRE", Locale.forLanguageTag("zh-CN"))
+        assertEquals(AppLanguage.ZH_CN, L10n.language)
+        assertEquals("取消", tr("CANCEL"))
+        L10n.apply(LANGUAGE_AUTO, "BPRF", Locale.forLanguageTag("zh-CN"))
+        assertEquals(AppLanguage.FR, L10n.language)
+        L10n.apply(LANGUAGE_AUTO, null, Locale.forLanguageTag("zh-Hant-TW"))
+        assertEquals(AppLanguage.EN, L10n.language)
+        L10n.apply("ZH_CN", "BPRF", Locale.FRENCH)
+        assertEquals(AppLanguage.ZH_CN, L10n.language)
+        assertEquals("自动", tr("AUTO"))
+        assertEquals("{0} + {1}", tr("{0} + {1}"))
         // An override wins over the ROM.
         L10n.apply("IT", "BPRE")
         assertEquals(AppLanguage.IT, L10n.language)
@@ -93,7 +107,7 @@ class TranslationsTest {
 
     @Test
     fun placeholders() {
-        L10n.apply("EN", null)
+        L10n.apply("EN", null, Locale.ENGLISH)
         assertEquals("AUTO (ENGLISH)", L10n.settingLabel(LANGUAGE_AUTO))
         assertEquals("3 + 4", tr("{0} + {1}", 3, 4))
     }

@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import java.util.Locale
 
 /**
- * The app's own text in eight languages. Game data (Pokémon / move / item / type
+ * The app's own text in nine languages. Game data (Pokémon / move / item / type
  * names, GUIDE pages) isn't translated here - it comes from the game's tables.
  *
  * Text is keyed by its English: `tr("CLOSE GAME")` returns the current
@@ -30,6 +30,7 @@ enum class AppLanguage(val code: String, val romLetter: Char?, val locale: Strin
     // (GitHub #61). Brazil's is the official games' Portuguese; Portugal's keeps those game words, its own everyday ones.
     BR("BR", null, "pt-BR", "PORTUGUÊS (BR)"),
     PT("PT", null, "pt", "PORTUGUÊS (PT)"),
+    ZH_CN("ZH_CN", null, "zh", "简体中文"),
     ;
 
     companion object {
@@ -42,7 +43,14 @@ enum class AppLanguage(val code: String, val romLetter: Char?, val locale: Strin
         /** Portuguese by region: Brazil's for pt-BR, Portugal's for every other pt. */
         fun ofLocale(locale: Locale): AppLanguage? =
             if (locale.language == "pt") { if (locale.country == "BR") BR else PT }
-            else entries.firstOrNull { it.locale == locale.language }
+            else if (locale.language == "zh") {
+                when {
+                    locale.script.equals("Hant", ignoreCase = true) -> null
+                    locale.script.equals("Hans", ignoreCase = true) -> ZH_CN
+                    locale.country in setOf("TW", "HK", "MO") -> null
+                    else -> ZH_CN
+                }
+            } else entries.firstOrNull { it.locale == locale.language }
     }
 }
 
@@ -66,6 +74,7 @@ data class Tr(
         AppLanguage.ES -> es
         AppLanguage.BR -> br
         AppLanguage.PT -> pt
+        AppLanguage.ZH_CN -> zh
     }
 }
 
@@ -82,7 +91,7 @@ object L10n {
      * Applies [setting] ([LANGUAGE_AUTO] or an [AppLanguage.code]). AUTO = the
      * running ROM's language ([romCode], its header game code); with no ROM
      * (Library / Settings) the device's, else English. A language no ROM comes in
-     * (Portuguese) wins over an English game too.
+     * (Portuguese or Simplified Chinese) wins over an English game too.
      */
     fun apply(setting: String, romCode: String?, device: Locale = Locale.getDefault()) {
         if (romCode != lastRomCode) gameLetter = null
@@ -91,7 +100,7 @@ object L10n {
         val game = if (romCode != null) gameLetter?.let { l -> AppLanguage.entries.firstOrNull { it.romLetter == l } } else null
         val rom = game ?: AppLanguage.ofRomCode(romCode)
         val dev = AppLanguage.ofLocale(device)
-        // No game is in Portuguese: on a Portuguese device an English game shows the device's, not English.
+        // A device language without a retail ROM also wins over an English game.
         autoLanguage = if (rom != null && !(rom == AppLanguage.EN && dev?.romLetter == null && dev != null)) rom
             else dev ?: AppLanguage.EN
         language = AppLanguage.ofCode(setting) ?: autoLanguage
