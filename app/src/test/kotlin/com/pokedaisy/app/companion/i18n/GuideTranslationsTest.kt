@@ -5,6 +5,8 @@ import com.pokedaisy.app.companion.data.SaveProgress
 import com.pokedaisy.app.companion.data.allAreaThings
 import com.pokedaisy.app.companion.data.gameGuide
 import org.junit.Assert.assertTrue
+import org.junit.Assert.assertEquals
+import org.junit.After
 import org.junit.Test
 import java.io.File
 
@@ -45,6 +47,49 @@ class GuideTranslationsTest {
         }
         allAreaThings(id).values.flatten().forEach { if (it.where.isNotEmpty()) out += it.where }
         return out.filter { it.isNotBlank() && hasLetters(it) }.toCollection(linkedSetOf())
+    }
+
+    @After fun resetLanguage() = L10n.apply("EN", null)
+
+    @Test fun `Chinese guide text uses translations and marks missing text`() {
+        L10n.apply("ZH_CN", null)
+        assertEquals("游戏内帮助", trGuide("In-game help"))
+        assertEquals("未译：A custom guide line", trGuide("A custom guide line"))
+        assertEquals("正在读取地图...", trGuide("正在读取地图..."))
+        assertEquals("", trGuide(""))
+        guideTranslationTables.forEach { table ->
+            table.keys.forEach { key ->
+                assertTrue("missing Chinese guide translation for $key",
+                    guideTranslationTables.any { !it[key]?.zh.isNullOrBlank() } || !translations[key]?.zh.isNullOrBlank())
+            }
+        }
+        val placeholders = Regex("""\{\d+\}""")
+        guideTranslationTables.forEach { table ->
+            table.forEach { (key, value) ->
+                value.zh?.let { zh ->
+                    assertTrue("empty Chinese guide translation for $key", zh.isNotBlank())
+                    assertEquals("Chinese guide placeholders for $key",
+                        placeholders.findAll(key).map { it.value }.sorted().toList(),
+                        placeholders.findAll(zh).map { it.value }.sorted().toList())
+                }
+            }
+        }
+    }
+
+    /** Track English-only games too; do not mistake the five translation tables for all guides. */
+    @Test fun reportChineseGuideCoverage() {
+        val dir = File("build/guide-zh-missing").apply { mkdirs() }
+        val missingByGuide = GuideId.entries.associateWith { id ->
+            lines(id).filter { key ->
+                guideTranslationTables.none { !it[key]?.zh.isNullOrBlank() } && translations[key]?.zh.isNullOrBlank()
+            }
+        }
+        missingByGuide.forEach { (id, missing) ->
+            File(dir, "$id.txt").writeText(missing.joinToString("") { "$it\n" })
+        }
+        val published = localized.associateWith { missingByGuide.getValue(it).size }
+        assertTrue("Chinese translations missing in supported guide tables: $published", published.values.all { it == 0 })
+        println("Chinese guide lines still missing: " + missingByGuide.entries.joinToString { "${it.key} ${it.value.size}" })
     }
 
     @Test fun everyLineIsTranslated() {
