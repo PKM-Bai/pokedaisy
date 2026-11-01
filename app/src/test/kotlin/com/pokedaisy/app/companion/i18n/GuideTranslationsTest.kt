@@ -24,17 +24,20 @@ class GuideTranslationsTest {
     private fun hasLetters(s: String) = s.any { it.isLetter() }
 
     /** Every hand-written line [id]'s GUIDE can show. */
-    private fun lines(id: GuideId): Set<String> {
+    private fun lines(id: GuideId, includePageTitles: Boolean = false): Set<String> {
         val out = linkedSetOf<String>()
         val guide = gameGuide(id) ?: return out
-        for (page in guide.pages) for (section in page.sections) {
-            out += section.heading
-            section.note?.let { out += it }
-            for (e in section.entries) {
-                out += e.title
-                e.hint?.let { out += it }
-                out += e.answer
-                e.detail?.let { out += it }
+        for (page in guide.pages) {
+            if (includePageTitles) out += page.title
+            for (section in page.sections) {
+                out += section.heading
+                section.note?.let { out += it }
+                for (e in section.entries) {
+                    out += e.title
+                    e.hint?.let { out += it }
+                    out += e.answer
+                    e.detail?.let { out += it }
+                }
             }
         }
         val none = SaveProgress(ByteArray(0x400), ByteArray(0x800))
@@ -86,7 +89,7 @@ class GuideTranslationsTest {
     @Test fun reportChineseGuideCoverage() {
         val dir = File("build/guide-zh-missing").apply { mkdirs() }
         val missingByGuide = GuideId.entries.associateWith { id ->
-            lines(id).filter { key ->
+            lines(id, includePageTitles = true).filter { key ->
                 guideTranslationTables.none { !it[key]?.zh.isNullOrBlank() } && guideZhExtra[key].isNullOrBlank() && translations[key]?.zh.isNullOrBlank()
             }
         }
