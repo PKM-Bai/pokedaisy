@@ -92,7 +92,8 @@ class DocsSearchTest {
         assertEquals("游戏库", chinese.page("library")?.title)
         assertEquals("屏幕、比例与着色器", chinese.page("screen")?.title)
         assertEquals("伴侣面板概览", chinese.page("companion")?.title)
-        assertTrue(chinese.page("controls")!!.title.startsWith("未译："))
+        assertEquals("控制、快捷键和触屏", chinese.page("controls")?.title)
+        assertTrue(chinese.page("settings-reference")!!.title.startsWith("未译："))
         assertEquals("install", DocsSearch(chinese).search("初次设置").first().page)
         assertEquals("guide", DocsSearch(chinese).search("攻略").first().page)
         assertEquals("dex", DocsSearch(chinese).search("图鉴").first().page)
@@ -110,6 +111,7 @@ class DocsSearchTest {
         assertEquals("library", DocsSearch(chinese).search("游戏库").first().page)
         assertEquals("screen", DocsSearch(chinese).search("屏幕、比例与着色器").first().page)
         assertEquals("companion", DocsSearch(chinese).search("伴侣面板概览").first().page)
+        assertEquals("controls", DocsSearch(chinese).search("控制、快捷键和触屏").first().page)
     }
 
     @Test
