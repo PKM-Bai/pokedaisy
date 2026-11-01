@@ -52,11 +52,37 @@ class DocsSearchTest {
     }
 
     @Test
+    fun changingManualLanguageClearsTheIndexAndKeepsThePage() {
+        val ui = com.pokedaisy.app.companion.ui.DocsUiState("saves")
+        ui.loadedLanguage = com.pokedaisy.app.companion.i18n.AppLanguage.EN
+        ui.manual = manual
+        ui.search = DocsSearch(manual)
+        ui.started = true
+        ui.selectLanguage(com.pokedaisy.app.companion.i18n.AppLanguage.ZH_CN)
+        assertEquals("saves", ui.page)
+        assertEquals(null, ui.manual)
+        assertEquals(null, ui.search)
+        assertEquals(false, ui.started)
+        assertEquals(com.pokedaisy.app.companion.i18n.AppLanguage.ZH_CN, ui.loadedLanguage)
+    }
+
+    @Test
+    fun bundledChineseManualCanBeReadAndSearched() {
+        val json = File(root, "app/src/main/assets/docs-zh-hans.json").readText(Charsets.UTF_8)
+        val chinese = DocsApi.parse(json)
+        assertEquals("欢迎使用 PokeDaisy", chinese.page("welcome")?.title)
+        assertTrue(chinese.page("install")!!.title.startsWith("未译："))
+        assertEquals("welcome", DocsSearch(chinese).search("初次设置").first().page)
+    }
+
+    @Test
     fun chineseSubstringSearchHighlightsTheMatch() {
         assertEquals(listOf("自动备份存档", "pokemon"), DocsSearch.terms("自动备份存档，Pokémon"))
         val hit = DocsSearch(manual).search("备份存档").first()
         assertEquals("saves", hit.page)
         assertEquals(listOf("备份存档"), hit.marks.map { hit.snippet.substring(it.first, it.last + 1) })
+        val overlap = DocsSearch(manual).search("备份 备份存档").first()
+        assertEquals(listOf("备份存档"), overlap.marks.map { overlap.snippet.substring(it.first, it.last + 1) })
     }
 
     @Test

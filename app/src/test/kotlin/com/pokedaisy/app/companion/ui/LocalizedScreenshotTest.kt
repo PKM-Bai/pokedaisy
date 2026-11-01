@@ -52,6 +52,32 @@ class LocalizedScreenshotTest(private val lang: AppLanguage) {
         CompanionScreen(SampleCompanion.snapshot, SampleCompanion.Slots, SampleCompanion.Settings(), initialTab = name)
     }
 
+    @Test fun chineseManual() {
+        if (lang != AppLanguage.ZH_CN) return
+        val root = generateSequence(java.io.File("").absoluteFile) { it.parentFile }.first { java.io.File(it, "settings.gradle.kts").isFile }
+        val manual = com.pokedaisy.app.DocsApi.parse(java.io.File(root, "app/src/main/assets/docs-zh-hans.json").readText(Charsets.UTF_8))
+        val source = object : DocsSource {
+            override fun cached() = manual
+            override fun refresh() = com.pokedaisy.app.DocsStore.Refresh.Unchanged
+            override fun image(manual: com.pokedaisy.app.DocsApi.Manual, image: com.pokedaisy.app.DocsApi.Block.Image): android.graphics.Bitmap? = null
+        }
+        val ui = DocsUiState().apply { this.manual = manual; loadedLanguage = lang; started = true; open("welcome") }
+        paparazzi.snapshot(lang.code) { AppTheme { DocsReader(ui, rememberGbaTextMetrics(), source) } }
+    }
+
+    @Test fun chineseManualSearch() {
+        if (lang != AppLanguage.ZH_CN) return
+        val root = generateSequence(java.io.File("").absoluteFile) { it.parentFile }.first { java.io.File(it, "settings.gradle.kts").isFile }
+        val manual = com.pokedaisy.app.DocsApi.parse(java.io.File(root, "app/src/main/assets/docs-zh-hans.json").readText(Charsets.UTF_8))
+        val source = object : DocsSource {
+            override fun cached() = manual
+            override fun refresh() = com.pokedaisy.app.DocsStore.Refresh.Unchanged
+            override fun image(manual: com.pokedaisy.app.DocsApi.Manual, image: com.pokedaisy.app.DocsApi.Block.Image): android.graphics.Bitmap? = null
+        }
+        val ui = DocsUiState().apply { this.manual = manual; loadedLanguage = lang; started = true; query = "助手" }
+        paparazzi.snapshot(lang.code) { AppTheme { DocsReader(ui, rememberGbaTextMetrics(), source) } }
+    }
+
     @Test fun settings() = tab("SETTINGS")
     @Test fun party() = tab("PARTY")
     @Test fun items() = tab("ITEMS")

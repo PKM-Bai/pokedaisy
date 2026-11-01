@@ -190,8 +190,14 @@ export function snippet(body, groups, size = 160) {
     } else if (t && qs.some((q) => matchScore(q, t) > 0)) hits.push([m.index, m.index + m[0].length]);
   }
   hits.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const merged = [];
+  for (const hit of hits) {
+    const last = merged[merged.length - 1];
+    if (last && hit[0] < last[1]) last[1] = Math.max(last[1], hit[1]);
+    else merged.push([...hit]);
+  }
   if (!body) return { text: '', marks: [] };
-  const first = hits[0]?.[0] ?? 0;
+  const first = merged[0]?.[0] ?? 0;
   let start = Math.max(0, first - Math.floor(size / 3));
   if (start > 0) {
     const space = body.indexOf(' ', start);
@@ -204,7 +210,7 @@ export function snippet(body, groups, size = 160) {
   }
   const pre = start > 0 ? '…' : '';
   const text = pre + body.slice(start, end) + (end < body.length ? '…' : '');
-  const marks = hits
+  const marks = merged
     .filter(([a, b]) => a >= start && b <= end)
     .map(([a, b]) => [a - start + pre.length, b - start + pre.length]);
   return { text, marks };

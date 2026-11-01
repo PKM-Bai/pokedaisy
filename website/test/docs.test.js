@@ -4,7 +4,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { docsApi, docsDir, loadDocs } from '../src/lib/docs.js';
+import { createHash } from 'node:crypto';
+import { docsApi, docsDir, loadDocs, loadChineseDocs } from '../src/lib/docs.js';
 
 const dir = docsDir();
 const files = readdirSync(dir).filter((f) => f.endsWith('.md'));
@@ -50,4 +51,27 @@ test('the docs never name a real Pokémon, move or item', () => {
   const bad = [];
   for (const f of files) text(f).split('\n').forEach((line, i) => { if (banned.test(line)) bad.push(`${f}:${i + 1}: ${line.trim()}`); });
   assert.deepEqual(bad, []);
+});
+
+
+test('Chinese manual keeps stable links, marks untranslated pages and matches the offline copy', () => {
+  const english = loadDocs();
+  const chinese = loadChineseDocs();
+  assert.equal(chinese.pages.length, english.pages.length);
+  assert.equal(chinese.pages.find((p) => p.slug === 'welcome').title, '欢迎使用 PokeDaisy');
+  assert.match(chinese.pages.find((p) => p.slug === 'install').title, /^未译：/);
+  for (const page of chinese.pages) {
+    const source = english.pages.find((p) => p.slug === page.slug);
+    assert.deepEqual(page.blocks.filter((b) => b.t === 'h2' || b.t === 'h3').map((b) => b.id),
+      source.blocks.filter((b) => b.t === 'h2' || b.t === 'h3').map((b) => b.id));
+  }
+  const offline = JSON.parse(readFileSync(join(dir, '../../app/src/main/assets/docs-zh-hans.json'), 'utf8'));
+  assert.deepEqual(offline, { ...docsApi(chinese, 'https://pokedaisy.com'), locale: 'zh-Hans' });
+  for (const image of chinese.pages.find((p) => p.slug === 'welcome').blocks.filter((b) => b.t === 'img')) {
+    const bytes = readFileSync(join(dir, '../../app/src/main/assets/docs-zh-hans', image.src.replace(/^\/docs\//, '')));
+    assert.equal(createHash('sha1').update(bytes).digest('hex').slice(0, 10), image.v);
+  }
+  for (const file of readdirSync(join(dir, 'zh-hans')).filter((f) => f.endsWith('.md'))) {
+    assert.ok(!chinese.pages.find((p) => p.slug === file.slice(0, -3)).title.startsWith('未译：'), `${file}: source changed`);
+  }
 });

@@ -163,7 +163,13 @@ class DocsSearch(manual: DocsApi.Manual) {
             }.asSequence()
             else listOfNotNull(if (t.isNotEmpty() && qs.any { matchScore(it, t) > 0 }) m.range.first to m.range.last + 1 else null).asSequence()
         }.sortedWith(compareBy({ it.first }, { it.second })).toList()
-        val first = hits.firstOrNull()?.first ?: 0
+        val merged = mutableListOf<Pair<Int, Int>>()
+        for (hit in hits) {
+            val last = merged.lastOrNull()
+            if (last != null && hit.first < last.second) merged[merged.lastIndex] = last.first to maxOf(last.second, hit.second)
+            else merged += hit
+        }
+        val first = merged.firstOrNull()?.first ?: 0
         var start = maxOf(0, first - size / 3)
         if (start > 0) {
             val space = body.indexOf(' ', start)
@@ -176,7 +182,7 @@ class DocsSearch(manual: DocsApi.Manual) {
         }
         val pre = if (start > 0) "…" else ""
         val text = pre + body.substring(start, end) + if (end < body.length) "…" else ""
-        val marks = hits.filter { (a, b) -> a >= start && b <= end }
+        val marks = merged.filter { (a, b) -> a >= start && b <= end }
             .map { (a, b) -> (a - start + pre.length) until (b - start + pre.length) }
         return text to marks
     }

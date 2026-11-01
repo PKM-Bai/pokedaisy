@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { buildIndex, search, stem, terms, distance } from '../src/lib/docsearch.js';
-import { docsApi, loadDocs } from '../src/lib/docs.js';
+import { docsApi, loadDocs, loadChineseDocs } from '../src/lib/docs.js';
 
 const cases = JSON.parse(readFileSync(new URL('./docsearch-cases.json', import.meta.url), 'utf8'));
 const key = (h) => h.page + (h.anchor ? `#${h.anchor}` : '');
@@ -39,4 +39,13 @@ test('Chinese substring search highlights the matching words', () => {
   const hit = search(buildIndex(cases.docs), '备份存档')[0];
   assert.equal(hit.page, 'saves');
   assert.deepEqual(hit.snippet.marks.map(([a, b]) => hit.snippet.text.slice(a, b)), ['备份存档']);
+  const overlap = search(buildIndex(cases.docs), '备份 备份存档')[0].snippet;
+  assert.deepEqual(overlap.marks.map(([a, b]) => overlap.text.slice(a, b)), ['备份存档']);
+});
+
+
+test('the Chinese welcome page is searchable', () => {
+  const index = buildIndex(docsApi(loadChineseDocs(), 'https://pokedaisy.com'));
+  assert.equal(search(index, '初次设置')[0].page, 'welcome');
+  assert.equal(search(index, '欢迎使用')[0].page, 'welcome');
 });
