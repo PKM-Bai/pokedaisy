@@ -85,7 +85,9 @@ class DocsSearchTest {
         assertEquals("快进与游戏速度", chinese.page("fast-forward")?.title)
         assertEquals("存档、备份和即时存档", chinese.page("saves")?.title)
         assertEquals("HUD", chinese.page("hud")?.title)
-        assertTrue(chinese.page("devices")!!.title.startsWith("未译："))
+        assertEquals("屏幕与设备", chinese.page("devices")?.title)
+        assertEquals("Linux 掌机基础版本", chinese.page("linux")?.title)
+        assertTrue(chinese.page("controls")!!.title.startsWith("未译："))
         assertEquals("install", DocsSearch(chinese).search("初次设置").first().page)
         assertEquals("guide", DocsSearch(chinese).search("攻略").first().page)
         assertEquals("dex", DocsSearch(chinese).search("图鉴").first().page)
@@ -96,6 +98,8 @@ class DocsSearchTest {
         assertEquals("cheats", DocsSearch(chinese).search("金手指").first().page)
         assertEquals("fast-forward", DocsSearch(chinese).search("快进与游戏速度").first().page)
         assertEquals("saves", DocsSearch(chinese).search("存档、备份和即时存档").first().page)
+        assertEquals("devices", DocsSearch(chinese).search("屏幕与设备").first().page)
+        assertEquals("linux", DocsSearch(chinese).search("Linux 掌机基础版本").first().page)
     }
 
     @Test
