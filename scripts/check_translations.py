@@ -9,8 +9,8 @@ interpolated "$x" key can't be looked up. Also lists table entries nothing uses
 
     python3 scripts/check_translations.py [-v] [--require-zh] [files...]
 
-Simplified Chinese is being prepared and is not exposed yet. Present zh translations
-are checked now; --require-zh also reports every entry still missing Chinese.
+Simplified Chinese is available in the app. --require-zh reports every entry
+still missing Chinese and checks placeholders.
 """
 import re
 import sys

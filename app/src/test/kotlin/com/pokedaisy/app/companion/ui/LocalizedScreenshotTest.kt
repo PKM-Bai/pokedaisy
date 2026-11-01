@@ -76,6 +76,35 @@ class LocalizedScreenshotTest(private val lang: AppLanguage) {
     @Test fun chineseTrainerManual() = chineseDocs("trainer-card")
     @Test fun chineseManualSearch() = chineseDocs(search = "助手")
 
+    @Test fun chineseGameBagChips() {
+        if (lang != AppLanguage.ZH_CN) return
+        val previous = com.pokedaisy.app.companion.data.activeGame
+        val labels = try {
+            listOf(com.pokedaisy.app.companion.data.GameKind.UNBOUND, com.pokedaisy.app.companion.data.GameKind.ROWE,
+                com.pokedaisy.app.companion.data.GameKind.MARIOMON, com.pokedaisy.app.companion.data.GameKind.CRYSTAL).map {
+                com.pokedaisy.app.companion.data.activeGame = it; companionTabLabel("ITEMS")
+            }
+        } finally { com.pokedaisy.app.companion.data.activeGame = previous }
+        paparazzi.snapshot(lang.code) {
+            AppTheme {
+                androidx.compose.foundation.layout.Row {
+                    labels.forEach { label -> TabChip(label, selected = false, modifier = androidx.compose.ui.Modifier.weight(1f)) {} }
+                }
+            }
+        }
+    }
+
+    @Test fun chineseGen1BattleButtons() {
+        if (lang != AppLanguage.ZH_CN) return
+        val previous = com.pokedaisy.app.companion.data.activeGame
+        com.pokedaisy.app.companion.data.activeGame = com.pokedaisy.app.companion.data.GameKind.CRYSTAL
+        try {
+            paparazzi.snapshot(lang.code) {
+                AppTheme { Gen1ActionButtons(null, null, true, null, androidx.compose.ui.Modifier.fillMaxSize()) }
+            }
+        } finally { com.pokedaisy.app.companion.data.activeGame = previous }
+    }
+
     @Test fun settings() = tab("SETTINGS")
     @Test fun party() = tab("PARTY")
     @Test fun items() = tab("ITEMS")

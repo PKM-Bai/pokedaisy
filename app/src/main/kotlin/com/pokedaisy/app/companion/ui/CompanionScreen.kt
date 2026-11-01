@@ -709,12 +709,12 @@ internal fun companionTabLabel(id: String): String = when (id) {
     "STATES" -> tr("STATES")
     "BATTLE" -> tr("BATTLE")
     "SETTINGS" -> tr("SETTINGS")
-    // The hacks' own words for the bag stay theirs.
+    // Preserve each game's word except when a Chinese label is selected.
     "ITEMS" -> when (activeGame) {
-        GameKind.UNBOUND -> "CUBE"
-        GameKind.ROWE -> "INVENTORY"
-        GameKind.MARIOMON -> "POCKETS"
-        GameKind.CRYSTAL, GameKind.CRYSTAL_CLEAR, GameKind.PRISM, GameKind.GOLD, GameKind.SILVER -> "PACK"
+        GameKind.UNBOUND -> tr("CUBE")
+        GameKind.ROWE -> tr("INVENTORY")
+        GameKind.MARIOMON -> tr("POCKETS")
+        GameKind.CRYSTAL, GameKind.CRYSTAL_CLEAR, GameKind.PRISM, GameKind.GOLD, GameKind.SILVER -> tr("PACK")
         GameKind.YELLOW, GameKind.RED, GameKind.BLUE, GameKind.PURE_RED, GameKind.PURE_BLUE -> tr("ITEM")   // Gen 1's START menu (the European carts' own word)
         else -> tr("BAG")
     }

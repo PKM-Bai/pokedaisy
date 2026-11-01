@@ -6,8 +6,8 @@ import androidx.compose.runtime.setValue
 import java.util.Locale
 
 /**
- * The app's own text in nine languages. Game data (Pokémon / move / item / type
- * names, GUIDE pages) isn't translated here - it comes from the game's tables.
+ * The app's own text in nine languages. Game data comes from the ROM; selected
+ * display labels and guide text also have separately verified translations.
  *
  * Text is keyed by its English: `tr("CLOSE GAME")` returns the current
  * language's version from [translations], or the English itself when there's

@@ -654,8 +654,20 @@ internal fun ButtonLabel(text: String, fontSize: TextUnit, bold: Boolean = false
  * text boxes (the game's own words; [BattleInput]'s indices stay Gen 3's: 1 = ITEM / BAG,
  * 2 = PkMn / POKEMON). The active mon's icon sits by FIGHT, as on the other games.
  */
+/** Keep game words for other languages; Chinese uses the app's labels without changing action indices. */
+internal fun gen1ActionLabel(index: Int, original: String): String {
+    if (com.pokedaisy.app.companion.i18n.L10n.language != com.pokedaisy.app.companion.i18n.AppLanguage.ZH_CN) return original
+    return when (index) {
+        0 -> tr("FIGHT")
+        1 -> companionTabLabel("ITEMS")
+        2 -> tr("POKéMON")
+        3 -> tr("RUN")
+        else -> original
+    }
+}
+
 @Composable
-private fun Gen1ActionButtons(
+internal fun Gen1ActionButtons(
     activeMon: MonView?,
     battleInput: BattleInput?,
     enabled: Boolean,
@@ -671,7 +683,7 @@ private fun Gen1ActionButtons(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(m.u * 6)) {
             if (icon) SpeciesIcon(activeMon?.iconAsset, size = m.u * 32)
-            GbaText(label, buttonContent, Color.Transparent, m, bold = true)
+            GbaText(gen1ActionLabel(index, label), buttonContent, Color.Transparent, m, bold = true)
         }
     }
     // Prism's menu is mixed case (Fight / PkMn / Pack / Run), Polished Crystal's too (its bag a Bag); Yellow's in each
