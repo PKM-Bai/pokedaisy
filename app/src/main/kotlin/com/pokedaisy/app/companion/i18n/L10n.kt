@@ -55,7 +55,7 @@ const val LANGUAGE_AUTO = "AUTO"
  */
 data class Tr(
     val ja: String, val fr: String, val de: String, val it: String, val es: String,
-    val br: String? = null, val pt: String? = null,
+    val br: String? = null, val pt: String? = null, val zh: String? = null,
 ) {
     fun of(lang: AppLanguage): String? = when (lang) {
         AppLanguage.EN -> null

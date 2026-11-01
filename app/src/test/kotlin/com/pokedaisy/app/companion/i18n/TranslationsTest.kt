@@ -81,6 +81,17 @@ class TranslationsTest {
     }
 
     @Test
+    fun `core simplified Chinese translations preserve placeholders`() {
+        trCore.forEach { (key, translation) ->
+            val zh = translation.zh.orEmpty()
+            assertTrue("missing Chinese for $key", zh.isNotBlank())
+            assertEquals("Chinese placeholders for $key",
+                placeholder.findAll(key).map { it.value }.sorted().toList(),
+                placeholder.findAll(zh).map { it.value }.sorted().toList())
+        }
+    }
+
+    @Test
     fun placeholders() {
         L10n.apply("EN", null)
         assertEquals("AUTO (ENGLISH)", L10n.settingLabel(LANGUAGE_AUTO))
