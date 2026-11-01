@@ -79,6 +79,7 @@ test('Chinese manual keeps stable links, marks untranslated pages and matches th
   assert.equal(chinese.pages.find((p) => p.slug === 'supported-games').title, '支持的游戏');
   assert.equal(chinese.pages.find((p) => p.slug === 'library').title, '游戏库');
   assert.equal(chinese.pages.find((p) => p.slug === 'screen').title, '屏幕、比例与着色器');
+  assert.equal(chinese.pages.find((p) => p.slug === 'companion').title, '伴侣面板概览');
   assert.match(chinese.pages.find((p) => p.slug === 'controls').title, /^未译：/);
   for (const page of chinese.pages) {
     assert.doesNotMatch(JSON.stringify(page.blocks), /\*\*/, `${page.slug}: unparsed bold markup`);

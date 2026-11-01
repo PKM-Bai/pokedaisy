@@ -64,4 +64,5 @@ test('the Chinese welcome page is searchable', () => {
   assert.equal(search(index, '支持的游戏')[0].page, 'supported-games');
   assert.equal(search(index, '游戏库')[0].page, 'library');
   assert.equal(search(index, '屏幕、比例与着色器')[0].page, 'screen');
+  assert.equal(search(index, '伴侣面板概览')[0].page, 'companion');
 });
