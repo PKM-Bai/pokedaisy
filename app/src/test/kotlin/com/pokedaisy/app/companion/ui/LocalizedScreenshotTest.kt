@@ -68,6 +68,20 @@ class LocalizedScreenshotTest(private val lang: AppLanguage) {
         }
     }
     @Test fun guide() = tab("GUIDE")
+    @Test fun guideGen2() = paparazzi.snapshot(lang.code) {
+        AppTheme {
+            val entry = com.pokedaisy.app.companion.data.GuideEntry(
+                "Why did the POKéMON on this route change?",
+                "The game's clock has three times of day: morning from 4 AM, day from 10 AM and night from 6 PM. Grass and caves have a list for each, and HERE shows the one for the time your game's clock says.",
+                "Look at the clock.",
+            )
+            val section = com.pokedaisy.app.companion.data.GuideSection("TIPS", listOf(entry))
+            val page = com.pokedaisy.app.companion.data.GuidePage("TIPS", listOf(section))
+            val source = GuideSource(com.pokedaisy.app.companion.data.GameGuide(listOf(page)), null, null, null)
+            val ui = GuideUiState().apply { this.page = page.title; open = key(page, section, entry); level = 2 }
+            GuideScreen(source, ui, SampleCompanion.snapshot)
+        }
+    }
     @Test fun map() = tab("MAP")
     @Test fun states() = tab("STATES")
     @Test fun more() = tab("MORE")

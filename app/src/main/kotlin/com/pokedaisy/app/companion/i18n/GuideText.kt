@@ -29,6 +29,7 @@ fun trGuide(english: String): String {
     if (lang == AppLanguage.EN || english.isBlank()) return english
     if (lang == AppLanguage.ZH_CN) {
         return guideTranslationTables.firstNotNullOfOrNull { it[english]?.zh }
+            ?: guideZhExtra[english]
             ?: translations[english]?.zh
             ?: english.takeIf { text -> text.any { it in '\u3400'..'\u9fff' } }
             ?: "未译：$english"

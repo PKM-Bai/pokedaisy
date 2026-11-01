@@ -64,6 +64,12 @@ class GuideTranslationsTest {
             }
         }
         val placeholders = Regex("""\{\d+\}""")
+        guideZhExtra.forEach { (key, zh) ->
+            assertTrue("empty Chinese guide translation for $key", zh.isNotBlank())
+            assertEquals("Chinese guide placeholders for $key",
+                placeholders.findAll(key).map { it.value }.sorted().toList(),
+                placeholders.findAll(zh).map { it.value }.sorted().toList())
+        }
         guideTranslationTables.forEach { table ->
             table.forEach { (key, value) ->
                 value.zh?.let { zh ->
@@ -81,13 +87,21 @@ class GuideTranslationsTest {
         val dir = File("build/guide-zh-missing").apply { mkdirs() }
         val missingByGuide = GuideId.entries.associateWith { id ->
             lines(id).filter { key ->
-                guideTranslationTables.none { !it[key]?.zh.isNullOrBlank() } && translations[key]?.zh.isNullOrBlank()
+                guideTranslationTables.none { !it[key]?.zh.isNullOrBlank() } && guideZhExtra[key].isNullOrBlank() && translations[key]?.zh.isNullOrBlank()
             }
         }
         missingByGuide.forEach { (id, missing) ->
             File(dir, "$id.txt").writeText(missing.joinToString("") { "$it\n" })
         }
-        val published = localized.associateWith { missingByGuide.getValue(it).size }
+        val completeChinese = localized + listOf(
+            GuideId.YELLOW, GuideId.RED, GuideId.BLUE, GuideId.CRYSTAL, GuideId.BLACK,
+            GuideId.ASH_GRAY, GuideId.CELIA, GuideId.ELITE_REDUX, GuideId.IMPERIUM,
+            GuideId.RADICAL_RED, GuideId.RECHARGED_EMERALD, GuideId.RECHARGED_YELLOW,
+            GuideId.RECHARGED_YELLOW_V180, GuideId.RECHARGED_YELLOW_V190, GuideId.RECHARGED_YELLOW_V194,
+            GuideId.ROCKET_EDITION, GuideId.SEAGLASS, GuideId.SOULGOLD, GuideId.TEAM_ROCKET,
+            GuideId.TMT2, GuideId.ULTRA_VIOLET, GuideId.WISHES,
+        )
+        val published = completeChinese.associateWith { missingByGuide.getValue(it).size }
         assertTrue("Chinese translations missing in supported guide tables: $published", published.values.all { it == 0 })
         println("Chinese guide lines still missing: " + missingByGuide.entries.joinToString { "${it.key} ${it.value.size}" })
     }

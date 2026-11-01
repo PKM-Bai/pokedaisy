@@ -4,7 +4,7 @@
     python scripts/check_zh_guides.py [--require-all]
 
 Identical English keys shared by guide tables use the first available Chinese
-translation, then the app's own table, exactly like trGuide(). This checks the
+translation, then extra guide and app tables, exactly like trGuide(). This checks the
 five existing guide translation tables, not English-only game guides.
 """
 from pathlib import Path
@@ -17,6 +17,7 @@ GUIDES = app.I18N / 'guide'
 ORDER = ('FireRed', 'Emerald', 'RubySapphire', 'Unbound', 'Quetzal')
 START = re.compile(r'^\s*' + app.STR + r'\s+to\s+Tr\(')
 ZH = re.compile(r',\s*zh\s*=\s*' + app.STR + r'\s*\),\s*$')
+EXTRA = re.compile(r'^\s*' + app.STR + r'\s+to\s+' + app.STR + r'\s*,\s*$')
 
 
 def main():
@@ -41,6 +42,17 @@ def main():
                     errors.append(f'{path.name}:{number}: empty Chinese or different placeholders: {key!r}')
                 texts.setdefault(key, value)
         tables[area] = keys
+    extras = app.I18N / 'GuideZhExtra.kt'
+    seen = set()
+    for number, line in enumerate(extras.read_text(encoding='utf-8').splitlines(), 1):
+        found = EXTRA.match(line)
+        if not found:
+            continue
+        key, value = found.groups()
+        if key in seen or not value.strip() or sorted(app.PH.findall(key)) != sorted(app.PH.findall(value)):
+            errors.append(f'{extras.name}:{number}: duplicate key, empty Chinese or different placeholders: {key!r}')
+        seen.add(key)
+        texts.setdefault(key, value)
     app_tables, _ = app.tables()
     for key, (_, values) in app_tables.items():
         if values[-1] is not None:
