@@ -77,12 +77,16 @@ class DocsSearchTest {
         assertEquals("队伍与详细信息", chinese.page("party")?.title)
         assertEquals("地图", chinese.page("map")?.title)
         assertEquals("训练家卡", chinese.page("trainer-card")?.title)
+        assertEquals("背包", chinese.page("bag")?.title)
+        assertEquals("对战", chinese.page("battle")?.title)
         assertTrue(chinese.page("devices")!!.title.startsWith("未译："))
         assertEquals("install", DocsSearch(chinese).search("初次设置").first().page)
         assertEquals("guide", DocsSearch(chinese).search("攻略").first().page)
         assertEquals("dex", DocsSearch(chinese).search("图鉴").first().page)
         assertEquals("party", DocsSearch(chinese).search("队伍与详细信息").first().page)
         assertEquals("trainer-card", DocsSearch(chinese).search("训练家卡").first().page)
+        assertEquals("bag", DocsSearch(chinese).search("背包").first().page)
+        assertEquals("battle", DocsSearch(chinese).search("对战").first().page)
     }
 
     @Test

@@ -72,6 +72,8 @@ class LocalizedScreenshotTest(private val lang: AppLanguage) {
     @Test fun chineseGuideManual() = chineseDocs("guide")
     @Test fun chineseDexManual() = chineseDocs("dex")
     @Test fun chinesePartyManual() = chineseDocs("party")
+    @Test fun chineseBagManual() = chineseDocs("bag")
+    @Test fun chineseBattleManual() = chineseDocs("battle")
     @Test fun chineseMapManual() = chineseDocs("map")
     @Test fun chineseTrainerManual() = chineseDocs("trainer-card")
     @Test fun chineseManualSearch() = chineseDocs(search = "助手")
