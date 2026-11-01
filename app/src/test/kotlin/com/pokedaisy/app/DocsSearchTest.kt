@@ -74,10 +74,12 @@ class DocsSearchTest {
         assertEquals("安装与初次设置", chinese.page("install")?.title)
         assertEquals("攻略", chinese.page("guide")?.title)
         assertEquals("图鉴", chinese.page("dex")?.title)
+        assertEquals("队伍与详细信息", chinese.page("party")?.title)
         assertTrue(chinese.page("devices")!!.title.startsWith("未译："))
         assertEquals("install", DocsSearch(chinese).search("初次设置").first().page)
         assertEquals("guide", DocsSearch(chinese).search("攻略").first().page)
         assertEquals("dex", DocsSearch(chinese).search("图鉴").first().page)
+        assertEquals("party", DocsSearch(chinese).search("队伍与详细信息").first().page)
     }
 
     @Test

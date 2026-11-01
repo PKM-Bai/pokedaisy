@@ -156,7 +156,7 @@ A card only shows while you're walking around the field, never in a battle, a me
 
 The app's own text comes in English, Japanese, French, German, Italian, Spanish, Simplified Chinese and Portuguese, with Brazil's and Portugal's Portuguese as two choices. `LANGUAGE` starts on `AUTO`, which follows the game's language; pick another and both screens switch at once.
 
-On a device set to Portuguese or Simplified Chinese, `AUTO` uses that language over an English game too. The GUIDE's written pages stay in English in Portuguese. In Simplified Chinese, translated guide text appears in Chinese; text still being translated keeps the original and is marked `未译`. The HELP manual includes Simplified Chinese welcome, installation, Pokédex and guide pages and an offline copy. Pages not translated yet keep the English text and are marked `未译`.
+On a device set to Portuguese or Simplified Chinese, `AUTO` uses that language over an English game too. The GUIDE's written pages stay in English in Portuguese. In Simplified Chinese, translated guide text appears in Chinese; text still being translated keeps the original and is marked `未译`. The HELP manual includes Simplified Chinese welcome, installation, party, Pokédex and guide pages and an offline copy. Pages not translated yet keep the English text and are marked `未译`.
 
 This changes PokeDaisy's words (buttons, labels, hints). In Simplified Chinese, standard type names and verified Pokédex species names are translated too. A Pokédex name that cannot be matched keeps the game's text and is marked `未译`. Nicknames, moves and items stay as your game has them.
 

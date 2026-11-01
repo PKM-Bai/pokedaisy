@@ -51,4 +51,5 @@ test('the Chinese welcome page is searchable', () => {
   assert.equal(search(index, '安装未知应用')[0].page, 'install');
   assert.equal(search(index, '攻略')[0].page, 'guide');
   assert.equal(search(index, '图鉴')[0].page, 'dex');
+  assert.equal(search(index, '队伍与详细信息')[0].page, 'party');
 });
