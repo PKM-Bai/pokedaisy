@@ -4,9 +4,13 @@ import android.graphics.Bitmap
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
 import com.android.resources.Density
@@ -63,6 +67,26 @@ class ChineseDeviceScreenshotTest(private val device: String, private val config
     @Test fun settings() = tab("SETTINGS")
     @Test fun party() = tab("PARTY")
     @Test fun guide() = tab("GUIDE")
+
+    private fun exampleDex() = com.pokedaisy.app.companion.data.DexEntry(
+        national = 25, species = 25, category = "MOUSE", heightDm = 4, weightHg = 60,
+        description = "ROM-specific description. This effect may differ between game versions.",
+        type1 = 0, type2 = 0, baseStats = listOf(35, 55, 40, 50, 50, 90),
+        abilities = listOf("STATIC", "CUSTOM ABILITY"), hiddenAbility = "HIDDEN ABILITY",
+        catchRate = 190, genderRatio = 127, eggGroups = emptyList(),
+    )
+
+    private fun dexInfo(entry: com.pokedaisy.app.companion.data.DexEntry) = shot { AppTheme {
+        val m = rememberGbaTextMetrics()
+        Box(Modifier.fillMaxSize().padding(12.dp)) {
+            DexInfoSection(entry, m, m, Modifier.fillMaxWidth(0.58f).fillMaxHeight())
+        }
+    } }
+
+    @Test fun unverifiedDexInfo() = dexInfo(exampleDex())
+
+    // Isolate the lower rows so the small screen captures both ability labels and their values.
+    @Test fun unverifiedDexAbilities() = dexInfo(exampleDex().copy(description = "", baseStats = emptyList()))
 
     @Test fun manual() {
         val root = generateSequence(File("").absoluteFile) { it.parentFile }.first { File(it, "settings.gradle.kts").isFile }

@@ -54,6 +54,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.pokedaisy.app.companion.data.DexEntry
 import com.pokedaisy.app.companion.data.dexSpeciesLabel
+import com.pokedaisy.app.companion.data.untranslatedGameText
+import com.pokedaisy.app.companion.i18n.AppLanguage
+import com.pokedaisy.app.companion.i18n.L10n
 import com.pokedaisy.app.companion.data.GameKind
 import com.pokedaisy.app.companion.data.GuideTables
 import com.pokedaisy.app.companion.data.activeGame
@@ -425,12 +428,13 @@ private fun EntryPage(
 
 /** INFO: the dex text, base stats, abilities, egg groups, gender and catch rate. */
 @Composable
-private fun DexInfoSection(e: DexEntry?, small: GbaTextMetrics, m: GbaTextMetrics, modifier: Modifier) {
+internal fun DexInfoSection(e: DexEntry?, small: GbaTextMetrics, m: GbaTextMetrics, modifier: Modifier) {
     val u = m.u
     // Nothing to tap: one D-pad stop that scrolls (the companion's window).
     val scroll = rememberScrollState()
     Column(modifier.dpadScroll(scroll, RectangleShape, m.lineHeight * 3).verticalScroll(scroll), verticalArrangement = Arrangement.spacedBy(u * 2)) {
-        GbaText(e?.description ?: "", OptionColors.label, OptionColors.labelShadow, small, maxLines = 6)
+        GbaText(untranslatedGameText(e?.description.orEmpty()), OptionColors.label, OptionColors.labelShadow, small,
+            maxLines = if (L10n.language == AppLanguage.ZH_CN) Int.MAX_VALUE else 6)
         Separator(m, Modifier.fillMaxWidth())
         if (e != null) {
             BaseStats(e.baseStats, small)
@@ -439,9 +443,11 @@ private fun DexInfoSection(e: DexEntry?, small: GbaTextMetrics, m: GbaTextMetric
             // Two names outrun a line in a wide game font (Polished Crystal's): one a line there.
             val wide = com.pokedaisy.app.companion.ui.theme.LocalGameFont.current != null
             if (e.abilities.isNotEmpty()) {
-                InfoLine(tr("ABILITY"), e.abilities.joinToString(if (wide) "\n" else " / "), small, maxLines = if (wide) e.abilities.size else 1)
+                InfoLine(tr("ABILITY"), e.abilities.joinToString(if (wide || L10n.language == AppLanguage.ZH_CN) "\n" else " / ") { untranslatedGameText(it) }, small,
+                    maxLines = if (L10n.language == AppLanguage.ZH_CN) Int.MAX_VALUE else if (wide) e.abilities.size else 1)
             }
-            e.hiddenAbility?.let { InfoLine(tr("HIDDEN|ability"), it, small) }
+            e.hiddenAbility?.let { InfoLine(tr("HIDDEN|ability"), untranslatedGameText(it), small,
+                maxLines = if (L10n.language == AppLanguage.ZH_CN) Int.MAX_VALUE else 1) }
             if (e.eggGroups.isNotEmpty()) InfoLine(tr("EGG GROUP"), e.eggGroups.joinToString(" / ") { dexCase(it) }, small)
             if (e.genderRatio >= 0) InfoLine(tr("GENDER"), genderLabel(e.genderRatio), small)
             InfoLine(tr("CATCH RATE"), "${e.catchRate}", small)

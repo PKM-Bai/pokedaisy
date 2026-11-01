@@ -15,3 +15,8 @@ fun dexSpeciesLabel(national: Int, original: String): String {
     if (entry != null && entry.any { it.equals(original.trim(), ignoreCase = true) }) return entry.first()
     return "未译：$original"
 }
+
+/** ROM data without a verified translation stays verbatim and is explicitly marked in Chinese.
+ * Apply only to game-owned data, never to a player's nickname or custom text. */
+fun untranslatedGameText(original: String): String =
+    if (L10n.language == AppLanguage.ZH_CN && original.isNotBlank()) "未译：$original" else original

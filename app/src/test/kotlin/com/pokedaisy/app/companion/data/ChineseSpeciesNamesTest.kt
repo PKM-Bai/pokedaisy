@@ -8,6 +8,16 @@ import org.junit.Test
 class ChineseSpeciesNamesTest {
     @After fun reset() = L10n.apply("EN", null)
 
+    @Test fun `unverified game data keeps the original and is marked only in Chinese`() {
+        L10n.apply("ZH_CN", null)
+        assertEquals("未译：A ROM description.\nSecond line.", untranslatedGameText("A ROM description.\nSecond line."))
+        assertEquals("未译：改版效果", untranslatedGameText("改版效果"))
+        assertEquals("", untranslatedGameText(""))
+        assertEquals("  ", untranslatedGameText("  "))
+        L10n.apply("EN", null)
+        assertEquals("A ROM description.", untranslatedGameText("A ROM description."))
+    }
+
     @Test fun `national number and source name both have to match`() {
         L10n.apply("ZH_CN", null)
         assertEquals("妙蛙种子", dexSpeciesLabel(1, "BULBASAUR"))
