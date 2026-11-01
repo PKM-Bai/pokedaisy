@@ -54,7 +54,7 @@ class LocalizedScreenshotTest(private val lang: AppLanguage) {
         CompanionScreen(SampleCompanion.snapshot, SampleCompanion.Slots, SampleCompanion.Settings(), initialTab = name)
     }
 
-    @Test fun chineseManual() {
+    private fun chineseDocs(slug: String? = null, search: String = "") {
         if (lang != AppLanguage.ZH_CN) return
         val root = generateSequence(java.io.File("").absoluteFile) { it.parentFile }.first { java.io.File(it, "settings.gradle.kts").isFile }
         val manual = com.pokedaisy.app.DocsApi.parse(java.io.File(root, "app/src/main/assets/docs-zh-hans.json").readText(Charsets.UTF_8))
@@ -63,74 +63,18 @@ class LocalizedScreenshotTest(private val lang: AppLanguage) {
             override fun refresh() = com.pokedaisy.app.DocsStore.Refresh.Unchanged
             override fun image(manual: com.pokedaisy.app.DocsApi.Manual, image: com.pokedaisy.app.DocsApi.Block.Image): android.graphics.Bitmap? = null
         }
-        val ui = DocsUiState().apply { this.manual = manual; loadedLanguage = lang; started = true; open("welcome") }
+        val ui = DocsUiState().apply { this.manual = manual; loadedLanguage = lang; started = true; query = search; slug?.let(::open) }
         paparazzi.snapshot(lang.code) { AppTheme { DocsReader(ui, rememberGbaTextMetrics(), source) } }
     }
 
-    @Test fun chineseInstallManual() {
-        if (lang != AppLanguage.ZH_CN) return
-        val root = generateSequence(java.io.File("").absoluteFile) { it.parentFile }.first { java.io.File(it, "settings.gradle.kts").isFile }
-        val manual = com.pokedaisy.app.DocsApi.parse(java.io.File(root, "app/src/main/assets/docs-zh-hans.json").readText(Charsets.UTF_8))
-        val source = object : DocsSource {
-            override fun cached() = manual
-            override fun refresh() = com.pokedaisy.app.DocsStore.Refresh.Unchanged
-            override fun image(manual: com.pokedaisy.app.DocsApi.Manual, image: com.pokedaisy.app.DocsApi.Block.Image): android.graphics.Bitmap? = null
-        }
-        val ui = DocsUiState().apply { this.manual = manual; loadedLanguage = lang; started = true; open("install") }
-        paparazzi.snapshot(lang.code) { AppTheme { DocsReader(ui, rememberGbaTextMetrics(), source) } }
-    }
-
-    @Test fun chineseGuideManual() {
-        if (lang != AppLanguage.ZH_CN) return
-        val root = generateSequence(java.io.File("").absoluteFile) { it.parentFile }.first { java.io.File(it, "settings.gradle.kts").isFile }
-        val manual = com.pokedaisy.app.DocsApi.parse(java.io.File(root, "app/src/main/assets/docs-zh-hans.json").readText(Charsets.UTF_8))
-        val source = object : DocsSource {
-            override fun cached() = manual
-            override fun refresh() = com.pokedaisy.app.DocsStore.Refresh.Unchanged
-            override fun image(manual: com.pokedaisy.app.DocsApi.Manual, image: com.pokedaisy.app.DocsApi.Block.Image): android.graphics.Bitmap? = null
-        }
-        val ui = DocsUiState().apply { this.manual = manual; loadedLanguage = lang; started = true; open("guide") }
-        paparazzi.snapshot(lang.code) { AppTheme { DocsReader(ui, rememberGbaTextMetrics(), source) } }
-    }
-
-    @Test fun chineseDexManual() {
-        if (lang != AppLanguage.ZH_CN) return
-        val root = generateSequence(java.io.File("").absoluteFile) { it.parentFile }.first { java.io.File(it, "settings.gradle.kts").isFile }
-        val manual = com.pokedaisy.app.DocsApi.parse(java.io.File(root, "app/src/main/assets/docs-zh-hans.json").readText(Charsets.UTF_8))
-        val source = object : DocsSource {
-            override fun cached() = manual
-            override fun refresh() = com.pokedaisy.app.DocsStore.Refresh.Unchanged
-            override fun image(manual: com.pokedaisy.app.DocsApi.Manual, image: com.pokedaisy.app.DocsApi.Block.Image): android.graphics.Bitmap? = null
-        }
-        val ui = DocsUiState().apply { this.manual = manual; loadedLanguage = lang; started = true; open("dex") }
-        paparazzi.snapshot(lang.code) { AppTheme { DocsReader(ui, rememberGbaTextMetrics(), source) } }
-    }
-
-    @Test fun chinesePartyManual() {
-        if (lang != AppLanguage.ZH_CN) return
-        val root = generateSequence(java.io.File("").absoluteFile) { it.parentFile }.first { java.io.File(it, "settings.gradle.kts").isFile }
-        val manual = com.pokedaisy.app.DocsApi.parse(java.io.File(root, "app/src/main/assets/docs-zh-hans.json").readText(Charsets.UTF_8))
-        val source = object : DocsSource {
-            override fun cached() = manual
-            override fun refresh() = com.pokedaisy.app.DocsStore.Refresh.Unchanged
-            override fun image(manual: com.pokedaisy.app.DocsApi.Manual, image: com.pokedaisy.app.DocsApi.Block.Image): android.graphics.Bitmap? = null
-        }
-        val ui = DocsUiState().apply { this.manual = manual; loadedLanguage = lang; started = true; open("party") }
-        paparazzi.snapshot(lang.code) { AppTheme { DocsReader(ui, rememberGbaTextMetrics(), source) } }
-    }
-
-    @Test fun chineseManualSearch() {
-        if (lang != AppLanguage.ZH_CN) return
-        val root = generateSequence(java.io.File("").absoluteFile) { it.parentFile }.first { java.io.File(it, "settings.gradle.kts").isFile }
-        val manual = com.pokedaisy.app.DocsApi.parse(java.io.File(root, "app/src/main/assets/docs-zh-hans.json").readText(Charsets.UTF_8))
-        val source = object : DocsSource {
-            override fun cached() = manual
-            override fun refresh() = com.pokedaisy.app.DocsStore.Refresh.Unchanged
-            override fun image(manual: com.pokedaisy.app.DocsApi.Manual, image: com.pokedaisy.app.DocsApi.Block.Image): android.graphics.Bitmap? = null
-        }
-        val ui = DocsUiState().apply { this.manual = manual; loadedLanguage = lang; started = true; query = "助手" }
-        paparazzi.snapshot(lang.code) { AppTheme { DocsReader(ui, rememberGbaTextMetrics(), source) } }
-    }
+    @Test fun chineseManual() = chineseDocs("welcome")
+    @Test fun chineseInstallManual() = chineseDocs("install")
+    @Test fun chineseGuideManual() = chineseDocs("guide")
+    @Test fun chineseDexManual() = chineseDocs("dex")
+    @Test fun chinesePartyManual() = chineseDocs("party")
+    @Test fun chineseMapManual() = chineseDocs("map")
+    @Test fun chineseTrainerManual() = chineseDocs("trainer-card")
+    @Test fun chineseManualSearch() = chineseDocs(search = "助手")
 
     @Test fun settings() = tab("SETTINGS")
     @Test fun party() = tab("PARTY")
