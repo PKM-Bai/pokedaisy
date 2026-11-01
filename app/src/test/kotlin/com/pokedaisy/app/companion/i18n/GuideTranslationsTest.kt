@@ -100,6 +100,9 @@ class GuideTranslationsTest {
             GuideId.RECHARGED_YELLOW_V180, GuideId.RECHARGED_YELLOW_V190, GuideId.RECHARGED_YELLOW_V194,
             GuideId.ROCKET_EDITION, GuideId.SEAGLASS, GuideId.SOULGOLD, GuideId.TEAM_ROCKET,
             GuideId.TMT2, GuideId.ULTRA_VIOLET, GuideId.WISHES,
+            GuideId.ORANGE_ISLANDS, GuideId.GS_CHRONICLES, GuideId.GHOST_GREY, GuideId.GLAZED,
+            GuideId.ODYSSEY, GuideId.MARIOMON, GuideId.EMERALD_LEGACY, GuideId.LAZARUS,
+            GuideId.DREAMSTONE, GuideId.GAIA, GuideId.AMETHYST, GuideId.AMETHYST_V141, GuideId.SWORD_SHIELD,
         )
         val published = completeChinese.associateWith { missingByGuide.getValue(it).size }
         assertTrue("Chinese translations missing in supported guide tables: $published", published.values.all { it == 0 })
