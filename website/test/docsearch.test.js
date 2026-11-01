@@ -32,3 +32,11 @@ test('the real manual answers common questions', () => {
     assert.ok(hits.includes(page), `"${q}" should find ${page} in its top 3, got ${hits.join(', ')}`);
   }
 });
+
+
+test('Chinese substring search highlights the matching words', () => {
+  assert.deepEqual(terms('自动备份存档，Pokémon'), ['自动备份存档', 'pokemon']);
+  const hit = search(buildIndex(cases.docs), '备份存档')[0];
+  assert.equal(hit.page, 'saves');
+  assert.deepEqual(hit.snippet.marks.map(([a, b]) => hit.snippet.text.slice(a, b)), ['备份存档']);
+});

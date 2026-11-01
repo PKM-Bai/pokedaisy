@@ -52,6 +52,14 @@ class DocsSearchTest {
     }
 
     @Test
+    fun chineseSubstringSearchHighlightsTheMatch() {
+        assertEquals(listOf("自动备份存档", "pokemon"), DocsSearch.terms("自动备份存档，Pokémon"))
+        val hit = DocsSearch(manual).search("备份存档").first()
+        assertEquals("saves", hit.page)
+        assertEquals(listOf("备份存档"), hit.marks.map { hit.snippet.substring(it.first, it.last + 1) })
+    }
+
+    @Test
     fun snippetsMarkTheMatch() {
         val hit = DocsSearch(manual).search("television").first()
         val marked = hit.marks.map { hit.snippet.substring(it.first, it.last + 1) }

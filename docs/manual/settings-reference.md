@@ -106,7 +106,7 @@ The `SHADERS` page:
 | `LICENSES` | a page | The licenses of PokeDaisy and everything it includes. | |
 | `LANGUAGE` | **`AUTO`**, `ENGLISH`, `日本語`, `FRANÇAIS`, `DEUTSCH`, `ITALIANO`, `ESPAÑOL`, `PORTUGUÊS (BR)`, `PORTUGUÊS (PT)`, `简体中文` | The app's own text. `AUTO` follows the game's language in game and the device's in the library. Game names (Pokémon, moves, items) stay as the game has them. | [The companion](companion.md) |
 | `DISCORD` | | Opens PokeDaisy's Discord server, where you can get help, report a bug, share an idea or just chat. The `Discord` link under the list opens it too. | [Troubleshooting](troubleshooting.md#how-do-i-report-a-bug-or-ask-for-a-game) |
-| `HELP` | a page | This manual, with a search box. It keeps a copy for reading offline. | [Welcome](welcome.md) |
+| `HELP` | a page | This manual, with a search box. It keeps a copy for reading offline. Search accepts Chinese text, including part of a longer Chinese phrase. | [Welcome](welcome.md) |
 
 ## Companion SETTINGS
 
