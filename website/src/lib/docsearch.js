@@ -123,6 +123,7 @@ function expand(index, query) {
 export function search(index, query, limit = 8) {
   const groups = expand(index, query);
   if (!groups.length) return [];
+  const queryTerms = terms(query);
   const N = index.records.length;
   const idf = (t) => Math.log(1 + N / (index.df.get(t) ?? 1));
   const scored = [];
@@ -155,6 +156,8 @@ export function search(index, query, limit = 8) {
     const title = [...new Set(r.fields.title)];
     const covered = title.filter((t) => groups.some((alts) => alts.some((a) => matchScore(a.t, t) > 0))).length;
     if (title.length) total *= 1 + 0.6 * (covered / title.length);
+    // An exact title is the clearest answer, even when a longer heading contains a rarer Chinese phrase.
+    if (queryTerms.length === r.fields.title.length && queryTerms.every((t, i) => t === r.fields.title[i])) total *= 2;
     // A page's own record a little ahead of its sections on a tie, so "fast forward" opens the page.
     if (!r.anchor) total *= 1.05;
     scored.push({ r, total, matched });

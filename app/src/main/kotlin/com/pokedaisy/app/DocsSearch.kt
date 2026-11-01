@@ -103,6 +103,7 @@ class DocsSearch(manual: DocsApi.Manual) {
     fun search(query: String, limit: Int = 8): List<Hit> {
         val groups = expand(query)
         if (groups.isEmpty()) return emptyList()
+        val queryTerms = terms(query)
         val n = records.size.toDouble()
         fun idf(t: String) = ln(1 + n / (df[t] ?: 1))
         class Scored(val r: Record, var total: Double, val matched: Int)
@@ -136,6 +137,8 @@ class DocsSearch(manual: DocsApi.Manual) {
             val title = r.fields.getValue("title").toSet()
             val covered = title.count { t -> groups.any { alts -> alts.any { matchScore(it.t, t) > 0 } } }
             if (title.isNotEmpty()) total *= 1 + 0.6 * (covered.toDouble() / title.size)
+            // Prefer the exact title to a longer heading containing the same Chinese phrase.
+            if (queryTerms == r.fields.getValue("title")) total *= 2
             // A page's own record a little ahead of its sections on a tie, so "fast forward" opens the page.
             if (r.anchor == null) total *= 1.05
             scored += Scored(r, total, matched)
