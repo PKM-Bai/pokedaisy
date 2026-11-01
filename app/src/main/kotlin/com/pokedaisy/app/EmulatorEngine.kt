@@ -548,7 +548,7 @@ class EmulatorEngine(
             runCatching { old.join(5000) }
             if (old.isAlive) {
                 Log.e("pokedaisy", "emu thread still running, not starting another")
-                loadError = "The previous game is still closing, try again"
+                loadError = tr("The previous game is still closing, try again")
                 return
             }
         }
@@ -752,7 +752,7 @@ class EmulatorEngine(
         SaveBackups.snapshot(save)
         ndsScaleSet = -1
         if (!MgbaCore.pkInit(rom.absolutePath, save.absolutePath)) {
-            loadError = "mGBA could not load ${rom.name}"
+            loadError = tr("mGBA could not load {0}", rom.name)
             running = false
             if (resume != null) onResumeResult?.invoke(false)
             return
@@ -1414,7 +1414,7 @@ class EmulatorEngine(
             }
         } catch (t: Throwable) {
             Log.e("pokedaisy", "emu loop crashed", t)
-            loadError = t.message ?: t.toString()
+            loadError = tr("The emulator stopped: {0}", t.message ?: t.toString())
         } finally {
             // A loop that died mid-game mustn't look alive, or leave a suspend for the next start.
             running = false

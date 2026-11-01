@@ -106,6 +106,16 @@ class TranslationsTest {
     }
 
     @Test
+    fun `emulator errors keep file names and exception details`() {
+        L10n.apply("ZH_CN", null)
+        assertEquals("上一个游戏仍在关闭，请重试", tr("The previous game is still closing, try again"))
+        assertEquals("mGBA 无法加载 我的游戏.gba", tr("mGBA could not load {0}", "我的游戏.gba"))
+        assertEquals("模拟器已停止：I/O error", tr("The emulator stopped: {0}", "I/O error"))
+        L10n.apply("EN", null)
+        assertEquals("mGBA could not load game.gba", tr("mGBA could not load {0}", "game.gba"))
+    }
+
+    @Test
     fun placeholders() {
         L10n.apply("EN", null, Locale.ENGLISH)
         assertEquals("AUTO (ENGLISH)", L10n.settingLabel(LANGUAGE_AUTO))
