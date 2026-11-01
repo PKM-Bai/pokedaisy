@@ -90,6 +90,7 @@ class DocsSearchTest {
         assertEquals("故障排查与常见问题", chinese.page("troubleshooting")?.title)
         assertEquals("支持的游戏", chinese.page("supported-games")?.title)
         assertEquals("游戏库", chinese.page("library")?.title)
+        assertEquals("屏幕、比例与着色器", chinese.page("screen")?.title)
         assertTrue(chinese.page("controls")!!.title.startsWith("未译："))
         assertEquals("install", DocsSearch(chinese).search("初次设置").first().page)
         assertEquals("guide", DocsSearch(chinese).search("攻略").first().page)
@@ -106,6 +107,7 @@ class DocsSearchTest {
         assertEquals("troubleshooting", DocsSearch(chinese).search("故障排查与常见问题").first().page)
         assertEquals("supported-games", DocsSearch(chinese).search("支持的游戏").first().page)
         assertEquals("library", DocsSearch(chinese).search("游戏库").first().page)
+        assertEquals("screen", DocsSearch(chinese).search("屏幕、比例与着色器").first().page)
     }
 
     @Test
