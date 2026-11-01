@@ -87,6 +87,7 @@ class DocsSearchTest {
         assertEquals("HUD", chinese.page("hud")?.title)
         assertEquals("屏幕与设备", chinese.page("devices")?.title)
         assertEquals("Linux 掌机基础版本", chinese.page("linux")?.title)
+        assertEquals("故障排查与常见问题", chinese.page("troubleshooting")?.title)
         assertTrue(chinese.page("controls")!!.title.startsWith("未译："))
         assertEquals("install", DocsSearch(chinese).search("初次设置").first().page)
         assertEquals("guide", DocsSearch(chinese).search("攻略").first().page)
@@ -100,6 +101,7 @@ class DocsSearchTest {
         assertEquals("saves", DocsSearch(chinese).search("存档、备份和即时存档").first().page)
         assertEquals("devices", DocsSearch(chinese).search("屏幕与设备").first().page)
         assertEquals("linux", DocsSearch(chinese).search("Linux 掌机基础版本").first().page)
+        assertEquals("troubleshooting", DocsSearch(chinese).search("故障排查与常见问题").first().page)
     }
 
     @Test
