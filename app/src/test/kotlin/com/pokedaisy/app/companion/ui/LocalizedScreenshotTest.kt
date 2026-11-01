@@ -65,6 +65,19 @@ class LocalizedScreenshotTest(private val lang: AppLanguage) {
         paparazzi.snapshot(lang.code) { AppTheme { DocsReader(ui, rememberGbaTextMetrics(), source) } }
     }
 
+    @Test fun chineseInstallManual() {
+        if (lang != AppLanguage.ZH_CN) return
+        val root = generateSequence(java.io.File("").absoluteFile) { it.parentFile }.first { java.io.File(it, "settings.gradle.kts").isFile }
+        val manual = com.pokedaisy.app.DocsApi.parse(java.io.File(root, "app/src/main/assets/docs-zh-hans.json").readText(Charsets.UTF_8))
+        val source = object : DocsSource {
+            override fun cached() = manual
+            override fun refresh() = com.pokedaisy.app.DocsStore.Refresh.Unchanged
+            override fun image(manual: com.pokedaisy.app.DocsApi.Manual, image: com.pokedaisy.app.DocsApi.Block.Image): android.graphics.Bitmap? = null
+        }
+        val ui = DocsUiState().apply { this.manual = manual; loadedLanguage = lang; started = true; open("install") }
+        paparazzi.snapshot(lang.code) { AppTheme { DocsReader(ui, rememberGbaTextMetrics(), source) } }
+    }
+
     @Test fun chineseManualSearch() {
         if (lang != AppLanguage.ZH_CN) return
         val root = generateSequence(java.io.File("").absoluteFile) { it.parentFile }.first { java.io.File(it, "settings.gradle.kts").isFile }

@@ -59,7 +59,8 @@ test('Chinese manual keeps stable links, marks untranslated pages and matches th
   const chinese = loadChineseDocs();
   assert.equal(chinese.pages.length, english.pages.length);
   assert.equal(chinese.pages.find((p) => p.slug === 'welcome').title, '欢迎使用 PokeDaisy');
-  assert.match(chinese.pages.find((p) => p.slug === 'install').title, /^未译：/);
+  assert.equal(chinese.pages.find((p) => p.slug === 'install').title, '安装与初次设置');
+  assert.match(chinese.pages.find((p) => p.slug === 'devices').title, /^未译：/);
   for (const page of chinese.pages) {
     const source = english.pages.find((p) => p.slug === page.slug);
     assert.deepEqual(page.blocks.filter((b) => b.t === 'h2' || b.t === 'h3').map((b) => b.id),
@@ -67,7 +68,7 @@ test('Chinese manual keeps stable links, marks untranslated pages and matches th
   }
   const offline = JSON.parse(readFileSync(join(dir, '../../app/src/main/assets/docs-zh-hans.json'), 'utf8'));
   assert.deepEqual(offline, { ...docsApi(chinese, 'https://pokedaisy.com'), locale: 'zh-Hans' });
-  for (const image of chinese.pages.find((p) => p.slug === 'welcome').blocks.filter((b) => b.t === 'img')) {
+  for (const image of chinese.pages.filter((p) => !p.title.startsWith('未译：')).flatMap((p) => p.blocks.filter((b) => b.t === 'img'))) {
     const bytes = readFileSync(join(dir, '../../app/src/main/assets/docs-zh-hans', image.src.replace(/^\/docs\//, '')));
     assert.equal(createHash('sha1').update(bytes).digest('hex').slice(0, 10), image.v);
   }

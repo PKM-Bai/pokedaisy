@@ -71,8 +71,9 @@ class DocsSearchTest {
         val json = File(root, "app/src/main/assets/docs-zh-hans.json").readText(Charsets.UTF_8)
         val chinese = DocsApi.parse(json)
         assertEquals("欢迎使用 PokeDaisy", chinese.page("welcome")?.title)
-        assertTrue(chinese.page("install")!!.title.startsWith("未译："))
-        assertEquals("welcome", DocsSearch(chinese).search("初次设置").first().page)
+        assertEquals("安装与初次设置", chinese.page("install")?.title)
+        assertTrue(chinese.page("devices")!!.title.startsWith("未译："))
+        assertEquals("install", DocsSearch(chinese).search("初次设置").first().page)
     }
 
     @Test
@@ -92,3 +93,4 @@ class DocsSearchTest {
         assertEquals(listOf("television"), marked)
     }
 }
+
