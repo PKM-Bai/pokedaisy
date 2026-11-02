@@ -69,6 +69,14 @@ class ChineseDeviceScreenshotTest(private val device: String, private val config
     @Test fun party() = tab("PARTY")
     @Test fun guide() = tab("GUIDE")
 
+    @Test fun chinesePartyNames() = shot { AppTheme {
+        val party = SampleCompanion.snapshot.party.take(3).mapIndexed { index, mon ->
+            mon.copy(nickname = listOf("铁哑铃", "迷你冰", "幕下力士")[index])
+        }
+        PartyGrid(party, selected = 0, onSlotClick = {})
+    } }
+
+
     private fun exampleDex() = com.pokedaisy.app.companion.data.DexEntry(
         national = 25, species = 25, category = "MOUSE", heightDm = 4, weightHg = 60,
         description = "ROM-specific description. This effect may differ between game versions.",

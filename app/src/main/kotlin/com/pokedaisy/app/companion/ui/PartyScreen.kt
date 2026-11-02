@@ -92,6 +92,8 @@ fun PartyScreen(party: List<MonView>, onMonClick: (MonView) -> Unit) {
  * [dimmed] greys a slot out and ignores its taps (the ITEMS tab's pick: a
  * Pokémon the item won't help).
  */
+internal fun needsPartyUnicodeFont(name: String): Boolean = name.any { it.code >= 0x2e80 }
+
 @Composable
 fun PartyGrid(
     party: List<MonView>,
@@ -106,7 +108,10 @@ fun PartyGrid(
     // FireRed/Emerald, Heart and Soul and the CFRU hacks get the game's own party-slot look
     // (drawn from the game's own data); every other game - or one whose art no
     // ROM has supplied yet (RomArt) - gets a FireRed-like slot drawn from a [PartyPalette].
-    val gameStyle = partySlotStyleFor(activeGame)?.takeIf { rememberPartySlotAssets(it) != null }
+    // The game's bitmap font has no CJK glyphs. Use the shared font-backed
+    // cards for the whole grid when a name needs them, preserving nicknames.
+    val needsUnicodeFont = party.any { needsPartyUnicodeFont(it.shownName) }
+    val gameStyle = partySlotStyleFor(activeGame)?.takeIf { !needsUnicodeFont && rememberPartySlotAssets(it) != null }
     val palette = partyPaletteFor(activeGame)
     // The D-pad's slot (the companion's window): it takes the game's selected look, like the game's own cursor.
     var focused by remember { mutableStateOf(-1) }

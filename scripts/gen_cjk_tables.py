@@ -17,6 +17,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "app/src/main/kotlin/com/pokedaisy/app/companion/data/CjkTables.kt"
 
+# This Unbound build shares the Elite Redux charmap: five live party names and
+# its first 33 item names have been checked against the ROM and game screen.
+# The alias is tied to the complete masked ROM hash, never the shared header.
+ALIASES = {"d5a391ad7527495324e9acd88535a9a5bcd1a1b3": ["40104331f1899b23cd5b6cee9612b775e6bb4234"]}
+
 ENTRY = re.compile(r"^'(.?)'\s*=\s*([0-9A-Fa-f]{2,4})\s*(?:@.*)?$")
 
 def parse(path):
@@ -65,6 +70,10 @@ def main():
     lines.append("    /** The masked-ROM sha1 -> its charmap; Gen3Text.cjk at detection. */")
     lines.append("    fun forSha(sha1: String?): IntArray? = when (sha1) {")
     for key, sha, _ in tables:
+        aliases = ALIASES.get(sha, [])
+        for alias in aliases:
+            lines.append(f'        "{sha}",')
+            sha = alias
         lines.append(f'        "{sha}" -> {key.upper()}')
     lines.append("        else -> null")
     lines.append("    }")

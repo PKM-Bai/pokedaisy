@@ -11,6 +11,12 @@ class ChineseGameLabelsTest {
     private val originalGame = activeGame
     @After fun reset() { activeGame = originalGame; L10n.apply("EN", null) }
 
+    @Test fun `party names with CJK use a font that can draw them`() {
+        assertEquals(true, needsPartyUnicodeFont("铁哑铃"))
+        assertEquals(true, needsPartyUnicodeFont("ミニリュウ"))
+        assertEquals(false, needsPartyUnicodeFont("Mr. Mime"))
+    }
+
     @Test fun `item descriptions mark game text but preserve action messages`() {
         val item = com.pokedaisy.app.companion.data.ItemView(9999, "CUSTOM ITEM", 1, null, description = "Changed ROM effect.")
         L10n.apply("ZH_CN", null)
