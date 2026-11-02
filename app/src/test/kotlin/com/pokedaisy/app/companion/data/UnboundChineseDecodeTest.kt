@@ -68,7 +68,14 @@ class UnboundChineseDecodeTest {
         org.junit.Assume.assumeTrue("matching Unbound Chinese sample is not present", file != null)
         val previousReader = PokedexSource.reader
         try {
-            PokedexSource.reader = RomFileReader(file!!.readBytes())
+            val bytes = file!!.readBytes()
+            PokedexSource.reader = RomFileReader(bytes)
+            // The map may load before the Poller sets the process-wide table.
+            Gen3Text.cjk = null
+            val map = RomRegionMap.read(RomRegionMap.BytesRom(bytes), CjkTables.forSha(sha))!!
+            assertEquals("冻土高原", map.sections[0x58]?.name)
+            assertEquals("贝林镇", map.sections[0x59]?.name)
+            assertEquals(null, Gen3Text.cjk)
             Gen3Text.cjk = CjkTables.forSha(sha)
             RomItemText.use(vanillaItems(0x08876200), chineseNames = true)
             val expected = listOf("大师球", "高级球", "超级球", "精灵球", "狩猎球", "捕网球", "潜水球", "巢穴球", "重复球", "计时球", "豪华球", "纪念球", "伤药", "解毒药", "灼伤药", "解冻药", "解眠药", "解麻药", "全复药", "全满药", "厉害伤药", "好伤药", "万灵药", "活力碎片", "活力块", "美味之水", "劲爽汽水", "果汁牛奶", "哞哞鲜奶", "元气粉", "元气根", "万能粉", "复活草")

@@ -1850,9 +1850,9 @@ object Gen3Text {
      * (0xFD + id, e.g. the player's name) are dropped. With [cjk] in force
      * (a Chinese fan translation), a 2-byte big-endian charmap code wins over
      * the 1-byte tables - greedy, like pret's assembler is decoded. */
-    fun decode(b: ByteArray, off: Int = 0, max: Int = b.size - off): String = buildString {
+    fun decode(b: ByteArray, off: Int = 0, max: Int = b.size - off, charmap: IntArray? = cjk): String = buildString {
         val end = minOf(b.size, off + max)
-        val cj = cjk
+        val cj = charmap
         if (cj != null) {
             var i = off
             while (i < end) {
