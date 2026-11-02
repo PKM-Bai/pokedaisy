@@ -310,7 +310,7 @@ class TelemetrySampler {
                 onGameIdentified?.invoke(kind!!.name, beMatch?.candidate?.title)
                 PokedexSource.romChanged()
                 (nativeCfg?.language ?: gen1Cfg?.language)?.let { com.pokedaisy.app.companion.i18n.L10n.applyGameLanguage(it) }
-                RomItemText.use(itemTable(reader))
+                RomItemText.use(itemTable(reader), chineseNames = romSha1 == UNBOUND_V2_1_1_1_CN_SHA1)
             }
             activeGame = kind ?: GameKind.FIRERED
             val base = baseCfg ?: unmarkedCfg

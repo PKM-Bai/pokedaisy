@@ -438,7 +438,7 @@ fun buildSnapshotView(t: Telemetry): SnapshotView {
         val it = t.items[i]
         ItemView(
             it.itemId,
-            itemName(it.itemId),
+            RomItemText.name(it.itemId) ?: itemName(it.itemId),
             it.quantity,
             spriteAsset("items", it.itemId),
             it.pocket,
