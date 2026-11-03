@@ -68,6 +68,18 @@ class ChineseDeviceScreenshotTest(private val device: String, private val config
     @Test fun settings() = tab("SETTINGS")
     @Test fun party() = tab("PARTY")
     @Test fun guide() = tab("GUIDE")
+    @Test fun chineseBattle() = shot { AppTheme {
+        val party = SampleCompanion.snapshot.party
+        val moves = listOf(
+            com.pokedaisy.app.companion.data.MoveView("撞击", "Normal", 32, 40, id = 33),
+            com.pokedaisy.app.companion.data.MoveView("闪光", "Normal", 20, 0, id = 148),
+            com.pokedaisy.app.companion.data.MoveView("金属撞击", "Steel", 32, 40, id = 499),
+        )
+        val player = party[0].copy(name = "铁哑铃", nickname = null, moves = moves)
+        val foe = party[1].copy(name = "冰宝", nickname = null)
+        BattleInfoScreen(listOf(player), listOf(foe), isDouble = false, showHints = true, onBack = {}, onShowSuggestions = {})
+    } }
+
 
     @Test fun chinesePartyNames() = shot { AppTheme {
         val party = SampleCompanion.snapshot.party.take(3).mapIndexed { index, mon ->

@@ -18,6 +18,7 @@ class TelemetrySampler {
     init {
         resetNativeBagCache()
         RomItemText.use(null)
+        UnboundChineseBattleNames.use(false)
     }
 
     private var kind: GameKind? = null
@@ -311,6 +312,7 @@ class TelemetrySampler {
                 PokedexSource.romChanged()
                 (nativeCfg?.language ?: gen1Cfg?.language)?.let { com.pokedaisy.app.companion.i18n.L10n.applyGameLanguage(it) }
                 RomItemText.use(itemTable(reader), chineseNames = romSha1 == UNBOUND_V2_1_1_1_CN_SHA1)
+                UnboundChineseBattleNames.use(romSha1 == UNBOUND_V2_1_1_1_CN_SHA1)
             }
             activeGame = kind ?: GameKind.FIRERED
             val base = baseCfg ?: unmarkedCfg

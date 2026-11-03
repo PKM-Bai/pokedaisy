@@ -77,6 +77,32 @@ class UnboundChineseDecodeTest {
             assertEquals("贝林镇", map.sections[0x59]?.name)
             assertEquals(null, Gen3Text.cjk)
             Gen3Text.cjk = CjkTables.forSha(sha)
+            UnboundChineseBattleNames.use(true)
+            assertEquals("铁哑铃", UnboundChineseBattleNames.species(398))
+            assertEquals("冰宝", UnboundChineseBattleNames.species(820))
+            assertEquals("撞击", UnboundChineseBattleNames.move(33))
+            assertEquals("闪光", UnboundChineseBattleNames.move(148))
+            assertEquals("金属撞击", UnboundChineseBattleNames.move(499))
+            val priorGame = activeGame
+            try {
+                activeGame = GameKind.UNBOUND
+                val empty = BattleMon(0, 0, 0, 0, 0, 0, 0, intArrayOf(), intArrayOf())
+                val player = BattleMon(398, 17, 8, 14, 33, 45, 0, intArrayOf(33, 148, 499, 0), intArrayOf(32, 20, 32, 0))
+                val opponent = BattleMon(820, 10, 15, 255, 6, 32, 0, intArrayOf(), intArrayOf())
+                val battlers = MutableList(4) { empty }
+                battlers[BATTLE_POS_PLAYER_LEFT] = player
+                battlers[BATTLE_POS_OPPONENT_LEFT] = opponent
+                val mon = Mon(398, 17, 33, 45, 0, intArrayOf(33, 148, 499, 0), intArrayOf(32, 20, 32, 0), nickname = "我的昵称")
+                val snapshot = buildSnapshotView(Telemetry(0, true, false, 0, 0, 0, 0, 0, 0, 1, listOf(mon), battlers, 0, emptyList()))
+                assertEquals("我的昵称", snapshot.battlePlayer.single().name)
+                assertEquals("冰宝", snapshot.battleOpponent.single().name)
+                assertEquals(listOf("撞击", "闪光", "金属撞击"), snapshot.battlePlayer.single().moves.map { it.name })
+            } finally { activeGame = priorGame }
+
+            assertEquals(null, UnboundChineseBattleNames.species(1294))
+            assertEquals(null, UnboundChineseBattleNames.move(923))
+            UnboundChineseBattleNames.use(false)
+            assertEquals(null, UnboundChineseBattleNames.move(33))
             RomItemText.use(vanillaItems(0x08876200), chineseNames = true)
             val expected = listOf("大师球", "高级球", "超级球", "精灵球", "狩猎球", "捕网球", "潜水球", "巢穴球", "重复球", "计时球", "豪华球", "纪念球", "伤药", "解毒药", "灼伤药", "解冻药", "解眠药", "解麻药", "全复药", "全满药", "厉害伤药", "好伤药", "万灵药", "活力碎片", "活力块", "美味之水", "劲爽汽水", "果汁牛奶", "哞哞鲜奶", "元气粉", "元气根", "万能粉", "复活草")
             expected.forEachIndexed { index, name -> assertEquals("item ${index + 1}", name, RomItemText.name(index + 1)) }
@@ -84,6 +110,14 @@ class UnboundChineseDecodeTest {
             RomItemText.use(null)
             PokedexSource.reader = previousReader
         }
+    }
+
+    @Test fun `battle nickname is retained only for an unambiguous party match`() {
+        val b = BattleMon(398, 17, 0, 0, 33, 45, 0, intArrayOf(), intArrayOf())
+        val mon = Mon(398, 17, 33, 45, 0, intArrayOf(), intArrayOf(), nickname = "我的昵称")
+        assertEquals("我的昵称", battleNickname(b, listOf(mon)))
+        assertEquals(null, battleNickname(b, listOf(mon, mon.copy(nickname = "另一只"))))
+        assertEquals(null, battleNickname(b, listOf(mon.copy(hp = 30))))
     }
 
     @Test fun `item name from the Chinese ROM decodes`() {

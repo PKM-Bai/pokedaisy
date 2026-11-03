@@ -263,9 +263,12 @@ fun MonView.withMovesVs(targets: List<MonView>): MonView = copy(moves = moves.ma
     })
 })
 
+private fun battleSpeciesName(id: Int): String = UnboundChineseBattleNames.species(id) ?: UnboundChineseBattleNames.fallback(speciesName(id))
+private fun battleMoveName(id: Int, fallback: String): String = UnboundChineseBattleNames.move(id) ?: UnboundChineseBattleNames.fallback(fallback)
+
 /** A moveset's views: [ids] with their [pp], empty slots (0) dropped. */
 private fun moveViews(ids: IntArray, pp: IntArray): List<MoveView> = ids.toList().mapIndexedNotNull { idx, moveId ->
-    if (moveId == 0) null else lookupMove(moveId).let { MoveView(it.name, typeName(it.type), pp.getOrElse(idx) { 0 }, it.power, id = moveId) }
+    if (moveId == 0) null else lookupMove(moveId).let { MoveView(battleMoveName(moveId, it.name), typeName(it.type), pp.getOrElse(idx) { 0 }, it.power, id = moveId) }
 }
 
 private const val REGION_MAP_TILE_SIZE = 8
@@ -327,7 +330,7 @@ fun buildSnapshotView(t: Telemetry): SnapshotView {
             if (moveId == 0) null
             else {
                 val info = lookupMove(moveId)
-                MoveView(info.name, typeName(info.type), m.pp[idx], info.power, id = moveId)
+                MoveView(battleMoveName(moveId, info.name), typeName(info.type), m.pp[idx], info.power, id = moveId)
             }
         }
         val isEgg = m.isEgg || isVanillaEgg(m.species)
@@ -385,13 +388,13 @@ fun buildSnapshotView(t: Telemetry): SnapshotView {
                     val info = lookupMove(moveId)
                     val vs = opponents.map { foe ->
                         val pct = if (info.type != TYPE_NONE) typeMultiplierPct(info.type, foe.type1, foe.type2) else 100
-                        MoveVsFoe(speciesName(foe.species), formatMultiplier(pct), pct)
+                        MoveVsFoe(battleSpeciesName(foe.species), formatMultiplier(pct), pct)
                     }
-                    MoveView(info.name, typeName(info.type), b.pp[idx], info.power, vs, id = moveId)
+                    MoveView(battleMoveName(moveId, info.name), typeName(info.type), b.pp[idx], info.power, vs, id = moveId)
                 }
             }
             return MonView(
-                species = b.species, name = speciesName(b.species), level = b.level,
+                species = b.species, name = battleNickname(b, t.party) ?: battleSpeciesName(b.species), level = b.level,
                 hp = b.hp, maxHp = b.maxHp, status = statusLabel(b.status1),
                 types = monTypes(b.type1, b.type2),
                 iconAsset = if (b.shiny) shinyIconAsset(b.species) else spriteAsset("pokemon", b.species),
@@ -404,7 +407,7 @@ fun buildSnapshotView(t: Telemetry): SnapshotView {
             if (b.species == 0) return null
             val matchups = typeMatchups(b.type1, b.type2)
             return MonView(
-                species = b.species, name = speciesName(b.species), level = b.level,
+                species = b.species, name = battleSpeciesName(b.species), level = b.level,
                 hp = b.hp, maxHp = b.maxHp, status = statusLabel(b.status1),
                 types = monTypes(b.type1, b.type2),
                 iconAsset = if (b.shiny) shinyIconAsset(b.species) else spriteAsset("pokemon", b.species),
