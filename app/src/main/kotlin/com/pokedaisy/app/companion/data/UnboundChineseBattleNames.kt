@@ -25,6 +25,12 @@ object UnboundChineseBattleNames {
         return value
     }
     fun fallback(original: String): String = if (enabled) untranslatedGameText(original) else original
+    /** Chinese text decoded from this identified ROM is already translated. */
+    fun dexOriginal(original: String): String =
+        if (enabled && Gen3Text.UNKNOWN !in original && original.any { it in '\u3400'..'\u9fff' }) original
+        else untranslatedGameText(original)
+    fun cachedSpecies(id: Int): String? = if (enabled) speciesCache[id] else null
+    fun cachedMove(id: Int): String? = if (enabled) moveCache[id] else null
     fun species(id: Int): String? = read(id, 1..1293, 0x0966A98CL, 11, speciesCache)
     fun move(id: Int): String? = read(id, 1..922, 0x08A40A10L, 13, moveCache)
 }

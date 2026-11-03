@@ -104,6 +104,37 @@ class ChineseDeviceScreenshotTest(private val device: String, private val config
         }
     } }
 
+    @Test fun verifiedChineseDexInfo() {
+        com.pokedaisy.app.companion.data.UnboundChineseBattleNames.use(true)
+        try { dexInfo(exampleDex().copy(description = "飞行的时候一直从嘴里发出超声波。", abilities = listOf("精神力"), hiddenAbility = null)) }
+        finally { com.pokedaisy.app.companion.data.UnboundChineseBattleNames.use(false) }
+    }
+
+    @Test fun verifiedChineseDexNames() {
+        val names = com.pokedaisy.app.companion.data.UnboundChineseBattleNames
+        val oldReader = com.pokedaisy.app.companion.data.PokedexSource.reader
+        com.pokedaisy.app.companion.data.PokedexSource.reader = object : com.pokedaisy.app.companion.data.MemoryReader {
+            override fun readCoreMemory(addr: Long, size: Int): ByteArray {
+                val raw = when (addr) {
+                    0x08A40A10L + 33L * 13 -> byteArrayOf(0x10, 0xe1.toByte(), 0x05, 0x84.toByte(), 0xff.toByte())
+                    0x0966A98CL + 398L * 11 -> byteArrayOf(0x0d, 0x04, 0x0e, 0xaf.toByte(), 0x08, 0xb8.toByte(), 0xff.toByte())
+                    else -> error("unexpected ROM read")
+                }
+                return ByteArray(size) { if (it < raw.size) raw[it] else 0 }
+            }
+        }
+        names.use(true)
+        names.species(398)
+        names.move(33)
+        try { shot { AppTheme {
+            val m = rememberGbaTextMetrics(1f)
+            Column(Modifier.fillMaxWidth(0.58f).fillMaxHeight().padding(12.dp)) {
+                FamilyMon(398, 374, 398, m, {}, Modifier.fillMaxWidth())
+                MoveLine("等级 100", 33, m)
+            }
+        } } } finally { names.use(false); com.pokedaisy.app.companion.data.PokedexSource.reader = oldReader }
+    }
+
     @Test fun unverifiedDexInfo() = dexInfo(exampleDex())
 
     // Isolate the lower rows so the small screen captures both ability labels and their values.

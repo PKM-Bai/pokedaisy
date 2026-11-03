@@ -47,6 +47,7 @@ import com.pokedaisy.app.companion.data.itemName
 import com.pokedaisy.app.companion.data.lookupLocation
 import com.pokedaisy.app.companion.data.lookupMove
 import com.pokedaisy.app.companion.data.untranslatedGameText
+import com.pokedaisy.app.companion.data.UnboundChineseBattleNames
 import com.pokedaisy.app.companion.data.speciesName
 import com.pokedaisy.app.companion.data.spriteAsset
 import com.pokedaisy.app.companion.data.typeName
@@ -159,8 +160,12 @@ private fun rowsOf(t: PokedexTables, links: List<EvoLink>) =
     links.map { FamilyRow(it, PokedexSource.nationalOf(t, it.from), PokedexSource.nationalOf(t, it.to)) }
 
 @Composable
-private fun FamilyMon(species: Int, national: Int, current: Int, m: GbaTextMetrics, onOpen: (Int) -> Unit, modifier: Modifier) {
+internal fun FamilyMon(species: Int, national: Int, current: Int, m: GbaTextMetrics, onOpen: (Int) -> Unit, modifier: Modifier) {
     val here = species == current
+    val fallback = UnboundChineseBattleNames.fallback(speciesName(species))
+    val displayName by produceKeyedState(UnboundChineseBattleNames.cachedSpecies(species) ?: fallback, species, fallback, L10n.language) {
+        value = withContext(Dispatchers.IO) { UnboundChineseBattleNames.species(species) ?: fallback }
+    }
     val noRipple = remember { MutableInteractionSource() }
     val focused by noRipple.collectIsFocusedAsState()
     Row(
@@ -172,7 +177,7 @@ private fun FamilyMon(species: Int, national: Int, current: Int, m: GbaTextMetri
         SpeciesIcon(spriteAsset("pokemon", species), size = m.lineHeight * 1.5f)
         Spacer(Modifier.width(m.u * 2))
         GbaText(
-            speciesName(species),
+            displayName,
             if (here) OptionColors.value else OptionColors.label,
             if (here) OptionColors.valueShadow else OptionColors.labelShadow,
             m, Modifier.weight(1f),
@@ -379,13 +384,19 @@ private fun LazyListScope.header(text: String, small: GbaTextMetrics) = item {
 internal fun MoveLine(label: String, move: Int, small: GbaTextMetrics) {
     val u = small.u
     val info = lookupMove(move)
+    val fallback = if (move == 0) info.name else untranslatedGameText(info.name)
+    val displayName by produceKeyedState(UnboundChineseBattleNames.cachedMove(move) ?: fallback, move, fallback, L10n.language) {
+        value = if (move == 0) fallback else withContext(Dispatchers.IO) {
+            UnboundChineseBattleNames.move(move) ?: fallback
+        }
+    }
     Row(
         Modifier.fillMaxWidth().drawBehind { drawRowDivider(OptionColors.divider, u.toPx(), 0f) }.padding(vertical = u * 2),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (label.isNotEmpty()) GbaText(label, OptionColors.value, OptionColors.valueShadow, small,
             Modifier.width(u * if (L10n.language == AppLanguage.ZH_CN) 72 else 40))
-        GbaText(if (move == 0) info.name else untranslatedGameText(info.name), OptionColors.label, OptionColors.labelShadow, small, Modifier.weight(1f),
+        GbaText(displayName, OptionColors.label, OptionColors.labelShadow, small, Modifier.weight(1f),
             maxLines = if (L10n.language == AppLanguage.ZH_CN) Int.MAX_VALUE else 1)
         typeName(info.type).takeIf { it.isNotEmpty() }?.let { TypeBadge(it, fontSize = 11.sp) }
     }

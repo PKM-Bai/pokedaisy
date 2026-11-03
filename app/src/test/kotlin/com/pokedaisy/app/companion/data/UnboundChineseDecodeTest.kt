@@ -8,7 +8,7 @@ import org.junit.Test
 /** Names matched against the original party screen of this exact ROM build. */
 class UnboundChineseDecodeTest {
     private val sha = "40104331f1899b23cd5b6cee9612b775e6bb4234"
-    @After fun reset() { Gen3Text.cjk = null }
+    @After fun reset() { Gen3Text.cjk = null; UnboundChineseBattleNames.use(false); com.pokedaisy.app.companion.i18n.L10n.apply("EN", null) }
     private fun bytes(hex: String) = hex.split(" ").map { it.toInt(16).toByte() }.toByteArray()
     @Test fun `known party names use the same Chinese encoding`() {
         Gen3Text.cjk = CjkTables.forSha(sha)
@@ -83,6 +83,18 @@ class UnboundChineseDecodeTest {
             assertEquals("撞击", UnboundChineseBattleNames.move(33))
             assertEquals("闪光", UnboundChineseBattleNames.move(148))
             assertEquals("金属撞击", UnboundChineseBattleNames.move(499))
+            com.pokedaisy.app.companion.i18n.L10n.apply("ZH_CN", null)
+            PokedexSource.romChanged()
+            val dex = PokedexSource.entry(POKEDEX_UNBOUND, 41)!!
+            org.junit.Assert.assertTrue(dex.description, dex.description.contains("飞行的时候"))
+            assertEquals(dex.description, UnboundChineseBattleNames.dexOriginal(dex.description))
+            assertEquals("精神力", UnboundChineseBattleNames.dexOriginal(dex.abilities.first()))
+            assertEquals("未译：Untranslated", UnboundChineseBattleNames.dexOriginal("Untranslated"))
+            assertEquals("未译：中文�", UnboundChineseBattleNames.dexOriginal("中文�"))
+            UnboundChineseBattleNames.use(false)
+            assertEquals("未译：精神力", UnboundChineseBattleNames.dexOriginal("精神力"))
+            UnboundChineseBattleNames.use(true)
+
             val priorGame = activeGame
             try {
                 activeGame = GameKind.UNBOUND
